@@ -3,10 +3,10 @@
   "children": [
     {
       "type": "frame",
-      "id": "HfHpJ",
-      "x": -720,
+      "id": "pjF2E",
+      "x": -773.0061381450187,
       "y": -480,
-      "name": "Vehicle Detail",
+      "name": "V2 — Vehicle Detail",
       "clip": true,
       "width": 1440,
       "height": 960,
@@ -14,37 +14,34 @@
       "children": [
         {
           "type": "frame",
-          "id": "tJ2lp",
+          "id": "gsJAG",
           "name": "Sidebar",
-          "width": 240,
+          "width": 64,
           "height": "fill_container",
-          "fill": "#FAFAFA",
+          "fill": "#09090B",
           "layout": "vertical",
           "padding": [
             24,
-            16
+            0
           ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
           "children": [
             {
               "type": "frame",
-              "id": "Lphv6",
-              "name": "lg4",
+              "id": "NkVJf",
+              "name": "tn4",
               "width": "fill_container",
-              "gap": 10,
-              "padding": [
-                0,
-                0,
-                24,
-                0
-              ],
+              "layout": "vertical",
+              "gap": 8,
               "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "J3wQv",
-                  "name": "lgI4",
-                  "width": 32,
-                  "height": 32,
+                  "id": "Pnbaa",
+                  "name": "lg4",
+                  "width": 36,
+                  "height": 36,
                   "fill": "$accent-blue",
                   "cornerRadius": 8,
                   "justifyContent": "center",
@@ -52,9 +49,9 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "0CYqQ",
+                      "id": "hGEGm",
                       "name": "lgT4",
-                      "fill": "$text-on-accent",
+                      "fill": "#FFFFFF",
                       "content": "IV",
                       "fontFamily": "Inter",
                       "fontSize": 14,
@@ -63,146 +60,98 @@
                   ]
                 },
                 {
-                  "type": "text",
-                  "id": "zLA7S",
-                  "name": "lgN4",
-                  "fill": "$text-primary",
-                  "content": "Inventory",
-                  "fontFamily": "Inter",
-                  "fontSize": 18,
-                  "fontWeight": "600"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "GvQ4u",
-              "name": "Nav Items",
-              "width": "fill_container",
-              "layout": "vertical",
-              "gap": 4,
-              "children": [
-                {
                   "type": "frame",
-                  "id": "lGiIs",
-                  "name": "n4d",
-                  "width": "fill_container",
-                  "cornerRadius": 8,
-                  "gap": 10,
-                  "padding": [
-                    10,
-                    12
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon_font",
-                      "id": "5t1vv",
-                      "name": "n4di",
-                      "width": 20,
-                      "height": 20,
-                      "iconFontName": "layout-dashboard",
-                      "iconFontFamily": "lucide",
-                      "fill": "$text-secondary"
-                    },
-                    {
-                      "type": "text",
-                      "id": "L0xeg",
-                      "name": "n4dt",
-                      "fill": "$text-secondary",
-                      "content": "Dashboard",
-                      "fontFamily": "Inter",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    }
-                  ]
+                  "id": "loUbQ",
+                  "name": "dv4",
+                  "width": 32,
+                  "height": 1,
+                  "fill": "#27272A"
                 },
                 {
                   "type": "frame",
-                  "id": "jSrwz",
-                  "name": "n4i",
+                  "id": "yFwpS",
+                  "name": "ni4",
                   "width": "fill_container",
-                  "fill": "$bg-highlight",
-                  "cornerRadius": 8,
-                  "gap": 10,
-                  "padding": [
-                    10,
-                    12
-                  ],
+                  "layout": "vertical",
+                  "gap": 4,
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "icon_font",
-                      "id": "OsTpI",
-                      "name": "n4ii",
-                      "width": 20,
-                      "height": 20,
-                      "iconFontName": "warehouse",
-                      "iconFontFamily": "lucide",
-                      "fill": "$accent-blue"
+                      "type": "frame",
+                      "id": "wNelo",
+                      "name": "nd4",
+                      "width": "fill_container",
+                      "height": 40,
+                      "cornerRadius": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "OnwX2",
+                          "name": "nd4i",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "layout-dashboard",
+                          "iconFontFamily": "lucide",
+                          "fill": "#71717A"
+                        }
+                      ]
                     },
                     {
-                      "type": "text",
-                      "id": "W1bVw",
-                      "name": "n4it",
-                      "fill": "$accent-blue",
-                      "content": "Inventory",
-                      "fontFamily": "Inter",
-                      "fontSize": 14,
-                      "fontWeight": "600"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "D4tcJ",
-                  "name": "n4a",
-                  "width": "fill_container",
-                  "cornerRadius": 8,
-                  "gap": 10,
-                  "padding": [
-                    10,
-                    12
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon_font",
-                      "id": "IxIVw",
-                      "name": "n4ai",
-                      "width": 20,
-                      "height": 20,
-                      "iconFontName": "timer",
-                      "iconFontFamily": "lucide",
-                      "fill": "$text-secondary"
+                      "type": "frame",
+                      "id": "OFT4m",
+                      "name": "ninv4",
+                      "width": "fill_container",
+                      "height": 40,
+                      "fill": "#27272A",
+                      "cornerRadius": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "5QBJ6",
+                          "name": "ninv4i",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "warehouse",
+                          "iconFontFamily": "lucide",
+                          "fill": "#FFFFFF"
+                        }
+                      ]
                     },
                     {
-                      "type": "text",
-                      "id": "SEiez",
-                      "name": "n4at",
-                      "fill": "$text-secondary",
-                      "content": "Aging Stock",
-                      "fontFamily": "Inter",
-                      "fontSize": 14,
-                      "fontWeight": "500"
+                      "type": "frame",
+                      "id": "ejW24",
+                      "name": "nag4",
+                      "width": "fill_container",
+                      "height": 40,
+                      "cornerRadius": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "8CX10",
+                          "name": "nag4i",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "timer",
+                          "iconFontFamily": "lucide",
+                          "fill": "#71717A"
+                        }
+                      ]
                     }
                   ]
                 }
               ]
-            },
-            {
-              "type": "frame",
-              "id": "MCPC6",
-              "name": "dv4",
-              "width": "fill_container",
-              "height": 1,
-              "fill": "$border-default"
             }
           ]
         },
         {
           "type": "frame",
-          "id": "uUzMU",
+          "id": "C5YvG",
           "name": "Main Content",
           "clip": true,
           "width": "fill_container",
@@ -210,21 +159,21 @@
           "layout": "vertical",
           "gap": 24,
           "padding": [
-            24,
-            32
+            32,
+            40
           ],
           "children": [
             {
               "type": "frame",
-              "id": "YZUIH",
-              "name": "hd4",
+              "id": "NqTh9",
+              "name": "backRow",
               "width": "fill_container",
               "gap": 16,
               "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "KtL7X",
+                  "id": "lfOPW",
                   "name": "backBtn",
                   "cornerRadius": 8,
                   "stroke": {
@@ -240,8 +189,8 @@
                   "children": [
                     {
                       "type": "icon_font",
-                      "id": "92HAS",
-                      "name": "backIcon",
+                      "id": "qJ0XJ",
+                      "name": "backIc",
                       "width": 16,
                       "height": 16,
                       "iconFontName": "arrow-left",
@@ -250,8 +199,8 @@
                     },
                     {
                       "type": "text",
-                      "id": "lsEOP",
-                      "name": "backText",
+                      "id": "f0Ed0",
+                      "name": "backTxt",
                       "fill": "$text-secondary",
                       "content": "Back to Inventory",
                       "fontFamily": "Inter",
@@ -264,7 +213,7 @@
             },
             {
               "type": "frame",
-              "id": "V4wX8",
+              "id": "FgeN5",
               "name": "Vehicle Info Card",
               "width": "fill_container",
               "cornerRadius": 12,
@@ -272,39 +221,40 @@
                 "thickness": 1,
                 "fill": "$border-default"
               },
-              "gap": 32,
+              "layout": "vertical",
+              "gap": 20,
               "padding": 24,
               "children": [
                 {
                   "type": "frame",
-                  "id": "dbzEr",
-                  "name": "vehLeft",
+                  "id": "mu6ln",
+                  "name": "vTop",
                   "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 16,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "qd10u",
-                      "name": "vehTitle",
+                      "id": "H693E",
+                      "name": "vTitleArea",
                       "gap": 12,
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "text",
-                          "id": "PQlc1",
-                          "name": "vehName",
+                          "id": "nRx6V",
+                          "name": "vTitle",
                           "fill": "$text-primary",
                           "content": "2023 Toyota Camry",
                           "fontFamily": "Inter",
                           "fontSize": 24,
-                          "fontWeight": "600",
+                          "fontWeight": "700",
                           "letterSpacing": -0.5
                         },
                         {
                           "type": "frame",
-                          "id": "lhOCY",
-                          "name": "vehAgBadge",
+                          "id": "wNKZ5",
+                          "name": "vBadge",
                           "fill": "$danger-light",
                           "cornerRadius": 6,
                           "gap": 4,
@@ -316,8 +266,8 @@
                           "children": [
                             {
                               "type": "frame",
-                              "id": "nr2Qg",
-                              "name": "vehAgDot",
+                              "id": "bbvaE",
+                              "name": "vBdot",
                               "width": 6,
                               "height": 6,
                               "fill": "$danger",
@@ -325,8 +275,8 @@
                             },
                             {
                               "type": "text",
-                              "id": "boQl6",
-                              "name": "vehAgText",
+                              "id": "rsL1u",
+                              "name": "vBtxt",
                               "fill": "$danger",
                               "content": "Aging — 124 days",
                               "fontFamily": "Inter",
@@ -336,238 +286,239 @@
                           ]
                         }
                       ]
-                    },
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "DRuUW",
+                  "name": "vVin",
+                  "fill": "$text-tertiary",
+                  "content": "VIN: 1HGBH41JXMN109186",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "vx5FK",
+                  "name": "vFields",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
                     {
-                      "type": "text",
-                      "id": "oF3oA",
-                      "name": "vehVin",
-                      "fill": "$text-tertiary",
-                      "content": "VIN: 1HGBH41JXMN109186",
-                      "fontFamily": "Inter",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
+                      "type": "frame",
+                      "id": "02GHZ",
+                      "name": "vf1",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "fLF4Z",
+                          "name": "vf1l",
+                          "fill": "$text-tertiary",
+                          "content": "Make",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "sXKkW",
+                          "name": "vf1v",
+                          "fill": "$text-primary",
+                          "content": "Toyota",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
                     },
                     {
                       "type": "frame",
-                      "id": "llWgL",
-                      "name": "vehDetails",
-                      "gap": 24,
+                      "id": "cyplw",
+                      "name": "vf2",
+                      "layout": "vertical",
+                      "gap": 4,
                       "children": [
                         {
-                          "type": "frame",
-                          "id": "GD9GW",
-                          "name": "vd1",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "eQGXy",
-                              "name": "vd1l",
-                              "fill": "$text-tertiary",
-                              "content": "Make",
-                              "fontFamily": "Inter",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            },
-                            {
-                              "type": "text",
-                              "id": "MZVIP",
-                              "name": "vd1v",
-                              "fill": "$text-primary",
-                              "content": "Toyota",
-                              "fontFamily": "Inter",
-                              "fontSize": 14,
-                              "fontWeight": "500"
-                            }
-                          ]
+                          "type": "text",
+                          "id": "P5PZ9",
+                          "name": "vf2l",
+                          "fill": "$text-tertiary",
+                          "content": "Model",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Cpfm5",
+                          "name": "vf2v",
+                          "fill": "$text-primary",
+                          "content": "Camry",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "U2L6j",
+                      "name": "vf3",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "AeUZQ",
+                          "name": "vf3l",
+                          "fill": "$text-tertiary",
+                          "content": "Year",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "1IvBz",
+                          "name": "vf3v",
+                          "fill": "$text-primary",
+                          "content": "2023",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "FDfti",
+                      "name": "vf4",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "74vIM",
+                          "name": "vf4l",
+                          "fill": "$text-tertiary",
+                          "content": "Price",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "zC4bC",
+                          "name": "vf4v",
+                          "fill": "$text-primary",
+                          "content": "$28,500",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Chohv",
+                      "name": "vf5",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "X8sHq",
+                          "name": "vf5l",
+                          "fill": "$text-tertiary",
+                          "content": "Status",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "500"
                         },
                         {
                           "type": "frame",
-                          "id": "a7MZL",
-                          "name": "vd2",
-                          "layout": "vertical",
-                          "gap": 4,
+                          "id": "WrdVT",
+                          "name": "vf5badge",
+                          "fill": "$bg-highlight",
+                          "cornerRadius": 6,
+                          "padding": [
+                            3,
+                            8
+                          ],
                           "children": [
                             {
                               "type": "text",
-                              "id": "fqmJc",
-                              "name": "vd2l",
-                              "fill": "$text-tertiary",
-                              "content": "Model",
+                              "id": "Tk8yX",
+                              "name": "vf5v",
+                              "fill": "$accent-blue",
+                              "content": "Available",
                               "fontFamily": "Inter",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            },
-                            {
-                              "type": "text",
-                              "id": "DZ0PM",
-                              "name": "vd2v",
-                              "fill": "$text-primary",
-                              "content": "Camry",
-                              "fontFamily": "Inter",
-                              "fontSize": 14,
+                              "fontSize": 12,
                               "fontWeight": "500"
                             }
                           ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "W5raV",
+                      "name": "vf6",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "r5TOc",
+                          "name": "vf6l",
+                          "fill": "$text-tertiary",
+                          "content": "Stocked",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "500"
                         },
                         {
-                          "type": "frame",
-                          "id": "iRMPX",
-                          "name": "vd3",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "TAyiR",
-                              "name": "vd3l",
-                              "fill": "$text-tertiary",
-                              "content": "Year",
-                              "fontFamily": "Inter",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            },
-                            {
-                              "type": "text",
-                              "id": "A51BT",
-                              "name": "vd3v",
-                              "fill": "$text-primary",
-                              "content": "2023",
-                              "fontFamily": "Inter",
-                              "fontSize": 14,
-                              "fontWeight": "500"
-                            }
-                          ]
+                          "type": "text",
+                          "id": "XlGHF",
+                          "name": "vf6v",
+                          "fill": "$text-primary",
+                          "content": "Nov 13, 2025",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kvKw2",
+                      "name": "vf7",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "VopD0",
+                          "name": "vf7l",
+                          "fill": "$text-tertiary",
+                          "content": "Dealership",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "500"
                         },
                         {
-                          "type": "frame",
-                          "id": "Y9t8j",
-                          "name": "vd4",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "9qzIa",
-                              "name": "vd4l",
-                              "fill": "$text-tertiary",
-                              "content": "Price",
-                              "fontFamily": "Inter",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            },
-                            {
-                              "type": "text",
-                              "id": "buXq7",
-                              "name": "vd4v",
-                              "fill": "$text-primary",
-                              "content": "$28,500",
-                              "fontFamily": "Inter",
-                              "fontSize": 14,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "0Bbku",
-                          "name": "vd5",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "RcZKP",
-                              "name": "vd5l",
-                              "fill": "$text-tertiary",
-                              "content": "Status",
-                              "fontFamily": "Inter",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "kPw6N",
-                              "name": "vd5badge",
-                              "fill": "$bg-highlight",
-                              "cornerRadius": 6,
-                              "padding": [
-                                3,
-                                8
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "ivlZ6",
-                                  "name": "vd5v",
-                                  "fill": "$accent-blue",
-                                  "content": "Available",
-                                  "fontFamily": "Inter",
-                                  "fontSize": 12,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "NjhyJ",
-                          "name": "vd6",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "d8kfP",
-                              "name": "vd6l",
-                              "fill": "$text-tertiary",
-                              "content": "Stocked",
-                              "fontFamily": "Inter",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            },
-                            {
-                              "type": "text",
-                              "id": "nlikj",
-                              "name": "vd6v",
-                              "fill": "$text-primary",
-                              "content": "Nov 13, 2025",
-                              "fontFamily": "Inter",
-                              "fontSize": 14,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "GAEnL",
-                          "name": "vd7",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "ELDAA",
-                              "name": "vd7l",
-                              "fill": "$text-tertiary",
-                              "content": "Dealership",
-                              "fontFamily": "Inter",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            },
-                            {
-                              "type": "text",
-                              "id": "TkUlP",
-                              "name": "vd7v",
-                              "fill": "$text-primary",
-                              "content": "Downtown Auto",
-                              "fontFamily": "Inter",
-                              "fontSize": 14,
-                              "fontWeight": "500"
-                            }
-                          ]
+                          "type": "text",
+                          "id": "Scmtg",
+                          "name": "vf7v",
+                          "fill": "$text-primary",
+                          "content": "Downtown Auto",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
                         }
                       ]
                     }
@@ -577,7 +528,7 @@
             },
             {
               "type": "frame",
-              "id": "SFWCv",
+              "id": "GKhOo",
               "name": "Two Columns",
               "width": "fill_container",
               "height": "fill_container",
@@ -585,7 +536,7 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "yZLBg",
+                  "id": "PZF5U",
                   "name": "Action History",
                   "width": "fill_container",
                   "height": "fill_container",
@@ -594,7 +545,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "yk63c",
+                      "id": "TUcq7",
                       "name": "ahTitle",
                       "fill": "$text-primary",
                       "content": "Action History",
@@ -604,7 +555,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "mqm3D",
+                      "id": "UDDF5",
                       "name": "Timeline",
                       "clip": true,
                       "width": "fill_container",
@@ -612,7 +563,7 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "Uk2Qj",
+                          "id": "BsFDv",
                           "name": "tl1",
                           "width": "fill_container",
                           "gap": 12,
@@ -625,7 +576,7 @@
                           "children": [
                             {
                               "type": "frame",
-                              "id": "TqBSj",
+                              "id": "adBcW",
                               "name": "tl1dot",
                               "width": 20,
                               "layout": "vertical",
@@ -633,7 +584,7 @@
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "2FGL3",
+                                  "id": "D9wdk",
                                   "name": "tl1circle",
                                   "width": 12,
                                   "height": 12,
@@ -642,7 +593,7 @@
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "Kl6E2",
+                                  "id": "wcYdH",
                                   "name": "tl1line",
                                   "width": 2,
                                   "height": "fill_container",
@@ -652,7 +603,7 @@
                             },
                             {
                               "type": "frame",
-                              "id": "6KJnU",
+                              "id": "CEhZ1",
                               "name": "tl1content",
                               "width": "fill_container",
                               "layout": "vertical",
@@ -660,14 +611,14 @@
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "nrSBI",
+                                  "id": "sl9Mg",
                                   "name": "tl1type",
                                   "gap": 8,
                                   "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "frame",
-                                      "id": "Ykbkm",
+                                      "id": "TBbWz",
                                       "name": "tl1badge",
                                       "fill": "$bg-highlight",
                                       "cornerRadius": 6,
@@ -678,7 +629,7 @@
                                       "children": [
                                         {
                                           "type": "text",
-                                          "id": "BVzmX",
+                                          "id": "TrUmo",
                                           "name": "tl1badgeT",
                                           "fill": "$accent-blue",
                                           "content": "Price Reduction Planned",
@@ -690,7 +641,7 @@
                                     },
                                     {
                                       "type": "text",
-                                      "id": "kAbas",
+                                      "id": "5nsXg",
                                       "name": "tl1date",
                                       "fill": "$text-tertiary",
                                       "content": "Mar 15, 2026",
@@ -702,7 +653,7 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "bAKZD",
+                                  "id": "SGZjH",
                                   "name": "tl1notes",
                                   "fill": "$text-secondary",
                                   "textGrowth": "fixed-width",
@@ -714,7 +665,7 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "pEB3J",
+                                  "id": "bmAPF",
                                   "name": "tl1by",
                                   "fill": "$text-tertiary",
                                   "content": "By: John Smith",
@@ -728,7 +679,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "yYV41",
+                          "id": "k7ViD",
                           "name": "tl2",
                           "width": "fill_container",
                           "gap": 12,
@@ -741,7 +692,7 @@
                           "children": [
                             {
                               "type": "frame",
-                              "id": "mBWxE",
+                              "id": "NRIe9",
                               "name": "tl2dot",
                               "width": 20,
                               "layout": "vertical",
@@ -749,7 +700,7 @@
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "XKBPG",
+                                  "id": "66KdU",
                                   "name": "tl2circle",
                                   "width": 12,
                                   "height": 12,
@@ -758,7 +709,7 @@
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "sjaoV",
+                                  "id": "XeCdC",
                                   "name": "tl2line",
                                   "width": 2,
                                   "height": "fill_container",
@@ -768,7 +719,7 @@
                             },
                             {
                               "type": "frame",
-                              "id": "fwxuU",
+                              "id": "lKMJd",
                               "name": "tl2content",
                               "width": "fill_container",
                               "layout": "vertical",
@@ -776,16 +727,16 @@
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "LqetS",
+                                  "id": "ckjoS",
                                   "name": "tl2type",
                                   "gap": 8,
                                   "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "frame",
-                                      "id": "qkEto",
+                                      "id": "nEDVF",
                                       "name": "tl2badge",
-                                      "fill": "#DCFCE7",
+                                      "fill": "$success-light",
                                       "cornerRadius": 6,
                                       "padding": [
                                         3,
@@ -794,9 +745,9 @@
                                       "children": [
                                         {
                                           "type": "text",
-                                          "id": "4wbJB",
+                                          "id": "s0F70",
                                           "name": "tl2badgeT",
-                                          "fill": "#166534",
+                                          "fill": "$success",
                                           "content": "Marketing Campaign",
                                           "fontFamily": "Inter",
                                           "fontSize": 12,
@@ -806,7 +757,7 @@
                                     },
                                     {
                                       "type": "text",
-                                      "id": "NAOpQ",
+                                      "id": "WQVBn",
                                       "name": "tl2date",
                                       "fill": "$text-tertiary",
                                       "content": "Feb 28, 2026",
@@ -818,7 +769,7 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "ddzX4",
+                                  "id": "uLk8M",
                                   "name": "tl2notes",
                                   "fill": "$text-secondary",
                                   "textGrowth": "fixed-width",
@@ -830,7 +781,7 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "zeWc0",
+                                  "id": "PVLQL",
                                   "name": "tl2by",
                                   "fill": "$text-tertiary",
                                   "content": "By: Sarah Johnson",
@@ -844,14 +795,14 @@
                         },
                         {
                           "type": "frame",
-                          "id": "PavuS",
+                          "id": "5MxpO",
                           "name": "tl3",
                           "width": "fill_container",
                           "gap": 12,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "XoQWJ",
+                              "id": "F5GYz",
                               "name": "tl3dot",
                               "width": 20,
                               "layout": "vertical",
@@ -859,7 +810,7 @@
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "1yTpo",
+                                  "id": "273SI",
                                   "name": "tl3circle",
                                   "width": 12,
                                   "height": 12,
@@ -870,7 +821,7 @@
                             },
                             {
                               "type": "frame",
-                              "id": "TAY7f",
+                              "id": "AMyzP",
                               "name": "tl3content",
                               "width": "fill_container",
                               "layout": "vertical",
@@ -878,16 +829,16 @@
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "EqEKr",
+                                  "id": "eLCww",
                                   "name": "tl3type",
                                   "gap": 8,
                                   "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "frame",
-                                      "id": "zGgIq",
+                                      "id": "sZ2Ev",
                                       "name": "tl3badge",
-                                      "fill": "#FEF3C7",
+                                      "fill": "$warning-light",
                                       "cornerRadius": 6,
                                       "padding": [
                                         3,
@@ -896,9 +847,9 @@
                                       "children": [
                                         {
                                           "type": "text",
-                                          "id": "GnjaF",
+                                          "id": "vKzxY",
                                           "name": "tl3badgeT",
-                                          "fill": "#92400E",
+                                          "fill": "$warning",
                                           "content": "Transfer Considered",
                                           "fontFamily": "Inter",
                                           "fontSize": 12,
@@ -908,7 +859,7 @@
                                     },
                                     {
                                       "type": "text",
-                                      "id": "IWuRv",
+                                      "id": "fg7Fh",
                                       "name": "tl3date",
                                       "fill": "$text-tertiary",
                                       "content": "Jan 20, 2026",
@@ -920,7 +871,7 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "OzkGZ",
+                                  "id": "wxDhi",
                                   "name": "tl3notes",
                                   "fill": "$text-secondary",
                                   "textGrowth": "fixed-width",
@@ -932,7 +883,7 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "tBM6C",
+                                  "id": "ZXHxg",
                                   "name": "tl3by",
                                   "fill": "$text-tertiary",
                                   "content": "By: Mike Davis",
@@ -950,9 +901,9 @@
                 },
                 {
                   "type": "frame",
-                  "id": "SiHrO",
+                  "id": "lAQ8v",
                   "name": "Log Action Form",
-                  "width": 400,
+                  "width": 380,
                   "cornerRadius": 12,
                   "stroke": {
                     "thickness": 1,
@@ -964,7 +915,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "TCrnA",
+                      "id": "WHBcz",
                       "name": "formTitle",
                       "fill": "$text-primary",
                       "content": "Log New Action",
@@ -974,7 +925,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "yHQ4g",
+                      "id": "KBXc9",
                       "name": "formDesc",
                       "fill": "$text-secondary",
                       "textGrowth": "fixed-width",
@@ -986,16 +937,16 @@
                     },
                     {
                       "type": "frame",
-                      "id": "VYOwI",
-                      "name": "field1",
+                      "id": "ic0tK",
+                      "name": "f1",
                       "width": "fill_container",
                       "layout": "vertical",
                       "gap": 6,
                       "children": [
                         {
                           "type": "text",
-                          "id": "ZeI3x",
-                          "name": "field1label",
+                          "id": "UeAXW",
+                          "name": "f1lbl",
                           "fill": "$text-primary",
                           "content": "Action Type",
                           "fontFamily": "Inter",
@@ -1004,8 +955,8 @@
                         },
                         {
                           "type": "frame",
-                          "id": "fKOET",
-                          "name": "field1input",
+                          "id": "BKafW",
+                          "name": "f1input",
                           "width": "fill_container",
                           "cornerRadius": 8,
                           "stroke": {
@@ -1021,8 +972,8 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "9iGSw",
-                              "name": "field1text",
+                              "id": "xKS2D",
+                              "name": "f1txt",
                               "fill": "$text-tertiary",
                               "content": "Select an action type...",
                               "fontFamily": "Inter",
@@ -1031,8 +982,8 @@
                             },
                             {
                               "type": "icon_font",
-                              "id": "JhvqG",
-                              "name": "field1chevron",
+                              "id": "x9mcT",
+                              "name": "f1ic",
                               "width": 16,
                               "height": 16,
                               "iconFontName": "chevron-down",
@@ -1045,16 +996,16 @@
                     },
                     {
                       "type": "frame",
-                      "id": "Rf5DQ",
-                      "name": "field2",
+                      "id": "w0BCJ",
+                      "name": "f2",
                       "width": "fill_container",
                       "layout": "vertical",
                       "gap": 6,
                       "children": [
                         {
                           "type": "text",
-                          "id": "x83SG",
-                          "name": "field2label",
+                          "id": "n2s9h",
+                          "name": "f2lbl",
                           "fill": "$text-primary",
                           "content": "Notes",
                           "fontFamily": "Inter",
@@ -1063,10 +1014,10 @@
                         },
                         {
                           "type": "frame",
-                          "id": "YLOj8",
-                          "name": "field2input",
+                          "id": "8Kfvx",
+                          "name": "f2input",
                           "width": "fill_container",
-                          "height": 120,
+                          "height": 100,
                           "cornerRadius": 8,
                           "stroke": {
                             "thickness": 1,
@@ -1080,8 +1031,8 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "rs1Wr",
-                              "name": "field2text",
+                              "id": "fsmAV",
+                              "name": "f2txt",
                               "fill": "$text-tertiary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
@@ -1096,16 +1047,16 @@
                     },
                     {
                       "type": "frame",
-                      "id": "EgifQ",
-                      "name": "field3",
+                      "id": "adsNb",
+                      "name": "f3",
                       "width": "fill_container",
                       "layout": "vertical",
                       "gap": 6,
                       "children": [
                         {
                           "type": "text",
-                          "id": "KIxsw",
-                          "name": "field3label",
+                          "id": "Ucpl1",
+                          "name": "f3lbl",
                           "fill": "$text-primary",
                           "content": "Your Name",
                           "fontFamily": "Inter",
@@ -1114,8 +1065,8 @@
                         },
                         {
                           "type": "frame",
-                          "id": "gp4wZ",
-                          "name": "field3input",
+                          "id": "z6BnC",
+                          "name": "f3input",
                           "width": "fill_container",
                           "cornerRadius": 8,
                           "stroke": {
@@ -1130,8 +1081,8 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "dotEa",
-                              "name": "field3text",
+                              "id": "1rYh3",
+                              "name": "f3txt",
                               "fill": "$text-tertiary",
                               "content": "Enter your name...",
                               "fontFamily": "Inter",
@@ -1144,7 +1095,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "IoTfY",
+                      "id": "eRoVR",
                       "name": "submitBtn",
                       "width": "fill_container",
                       "fill": "$accent-blue",
@@ -1159,19 +1110,19 @@
                       "children": [
                         {
                           "type": "icon_font",
-                          "id": "KHFgi",
-                          "name": "submitIcon",
+                          "id": "ifC43",
+                          "name": "submitIc",
                           "width": 16,
                           "height": 16,
                           "iconFontName": "send",
                           "iconFontFamily": "lucide",
-                          "fill": "$text-on-accent"
+                          "fill": "#FFFFFF"
                         },
                         {
                           "type": "text",
-                          "id": "z3yYN",
-                          "name": "submitText",
-                          "fill": "$text-on-accent",
+                          "id": "diad8",
+                          "name": "submitTxt",
+                          "fill": "#FFFFFF",
                           "content": "Submit Action",
                           "fontFamily": "Inter",
                           "fontSize": 14,
@@ -1181,16 +1132,16 @@
                     },
                     {
                       "type": "frame",
-                      "id": "jMokE",
-                      "name": "actionTypes",
+                      "id": "lx16j",
+                      "name": "atypes",
                       "width": "fill_container",
                       "layout": "vertical",
                       "gap": 8,
                       "children": [
                         {
                           "type": "text",
-                          "id": "MAgCK",
-                          "name": "atLabel",
+                          "id": "sDB4X",
+                          "name": "atLbl",
                           "fill": "$text-tertiary",
                           "content": "Available action types:",
                           "fontFamily": "Inter",
@@ -1199,16 +1150,16 @@
                         },
                         {
                           "type": "frame",
-                          "id": "ZiJyj",
+                          "id": "OK05b",
                           "name": "atList",
                           "width": "fill_container",
                           "gap": 6,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "f7433",
+                              "id": "80ci7",
                               "name": "at1",
-                              "fill": "$bg-secondary",
+                              "fill": "$bg-tertiary",
                               "cornerRadius": 6,
                               "padding": [
                                 3,
@@ -1217,7 +1168,7 @@
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "CDKww",
+                                  "id": "6T7UY",
                                   "name": "at1t",
                                   "fill": "$text-secondary",
                                   "content": "Price Reduction",
@@ -1229,9 +1180,9 @@
                             },
                             {
                               "type": "frame",
-                              "id": "OsrcO",
+                              "id": "T6Vy8",
                               "name": "at2",
-                              "fill": "$bg-secondary",
+                              "fill": "$bg-tertiary",
                               "cornerRadius": 6,
                               "padding": [
                                 3,
@@ -1240,7 +1191,7 @@
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "RIThH",
+                                  "id": "Booxu",
                                   "name": "at2t",
                                   "fill": "$text-secondary",
                                   "content": "Transfer",
@@ -1252,9 +1203,9 @@
                             },
                             {
                               "type": "frame",
-                              "id": "3DDWN",
+                              "id": "0hB1X",
                               "name": "at3",
-                              "fill": "$bg-secondary",
+                              "fill": "$bg-tertiary",
                               "cornerRadius": 6,
                               "padding": [
                                 3,
@@ -1263,10 +1214,33 @@
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "HC8p6",
+                                  "id": "p1tDb",
                                   "name": "at3t",
                                   "fill": "$text-secondary",
                                   "content": "Auction",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 10,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Omgws",
+                              "name": "at4",
+                              "fill": "$bg-tertiary",
+                              "cornerRadius": 6,
+                              "padding": [
+                                3,
+                                8
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "gcDgj",
+                                  "name": "at4t",
+                                  "fill": "$text-secondary",
+                                  "content": "Marketing",
                                   "fontFamily": "Inter",
                                   "fontSize": 10,
                                   "fontWeight": "500"
@@ -1328,6 +1302,26 @@
       "value": "#A1A1AA"
     },
     "bg-secondary": {
+      "type": "color",
+      "value": "#F4F4F5"
+    },
+    "success-light": {
+      "type": "color",
+      "value": "#DCFCE7"
+    },
+    "success": {
+      "type": "color",
+      "value": "#16A34A"
+    },
+    "warning-light": {
+      "type": "color",
+      "value": "#FEF3C7"
+    },
+    "warning": {
+      "type": "color",
+      "value": "#F59E0B"
+    },
+    "bg-tertiary": {
       "type": "color",
       "value": "#F4F4F5"
     }
