@@ -87,7 +87,186 @@ C4Component
   Rel(config, handler, "provides DB pool, ports, CORS origins")
 ```
 
-### 1.5 Health Check Flow
+### 1.5 L3 Frontend Component Diagram
+
+```mermaid
+C4Component
+  title Frontend App — Component Diagram
+
+  Container_Boundary(fe, "Next.js Frontend") {
+    Component(sidebar, "Sidebar", "React, lucide-react", "Icon-based navigation with active state")
+
+    Component(dashboard_page, "Dashboard Page", "React", "Stats cards, charts, recent actions table")
+    Component(inventory_page, "Inventory Page", "React", "Filterable, sortable, paginated vehicle table")
+    Component(aging_page, "Aging Stock Page", "React", "Pre-filtered aging vehicles with progress bars")
+    Component(detail_page, "Vehicle Detail Page", "React", "Info card, action timeline, action form")
+
+    Component(stats_card, "StatsCard", "React", "Reusable metric display card")
+    Component(status_badge, "StatusBadge", "React", "Vehicle status indicator")
+    Component(action_badge, "ActionBadge", "React", "Action type indicator")
+    Component(pagination, "Pagination", "React", "Page navigation with ellipsis")
+    Component(vehicle_filters, "VehicleFilters", "React", "Search, make, status, aging toggle")
+    Component(aging_bar, "AgingProgressBar", "React", "Visual days-in-stock indicator")
+    Component(info_card, "VehicleInfoCard", "React", "Vehicle detail fields display")
+    Component(timeline, "ActionTimeline", "React", "Chronological action history")
+    Component(action_form, "ActionForm", "React", "Log new action mutation form")
+    Component(charts, "Charts", "Recharts", "Bar chart (by make) + Donut chart (by status)")
+
+    Component(hook_summary, "useDashboardSummary", "TanStack Query", "Fetches dashboard aggregates")
+    Component(hook_vehicles, "useVehicles", "TanStack Query", "Fetches paginated vehicle list")
+    Component(hook_vehicle, "useVehicle", "TanStack Query", "Fetches single vehicle detail")
+    Component(hook_action, "useCreateVehicleAction", "TanStack Query", "Mutation: log action")
+    Component(api_client, "apiFetch", "TypeScript", "Typed HTTP client wrapper")
+  }
+
+  Container(backend, "Backend API", "Go, Chi", "REST API")
+
+  Rel(dashboard_page, hook_summary, "uses")
+  Rel(dashboard_page, hook_vehicles, "uses")
+  Rel(inventory_page, hook_vehicles, "uses")
+  Rel(aging_page, hook_vehicles, "uses")
+  Rel(detail_page, hook_vehicle, "uses")
+  Rel(detail_page, hook_action, "uses")
+  Rel(hook_summary, api_client, "calls")
+  Rel(hook_vehicles, api_client, "calls")
+  Rel(hook_vehicle, api_client, "calls")
+  Rel(hook_action, api_client, "calls")
+  Rel(api_client, backend, "HTTP/JSON", "/api/v1/*")
+```
+
+### 1.6 Frontend Runtime Flow: Dashboard Data Loading
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant Dashboard as Dashboard Page
+  participant TQ as TanStack Query
+  participant API as apiFetch
+  participant Backend as Backend API
+
+  User->>Dashboard: Navigate to /
+  Dashboard->>TQ: useDashboardSummary()
+  Dashboard->>TQ: useVehicles({ page_size: 10, order: desc })
+  Note over TQ: Both queries fire in parallel (no waterfall)
+
+  TQ->>API: GET /api/v1/dashboard/summary
+  TQ->>API: GET /api/v1/vehicles?page_size=10&order=desc
+  API->>Backend: HTTP requests (parallel)
+  Backend-->>API: 200 DashboardSummary
+  Backend-->>API: 200 PaginatedVehicles
+  API-->>TQ: Parsed JSON responses
+  TQ-->>Dashboard: { data: summary } + { data: vehicles }
+  Dashboard->>Dashboard: Render stats, charts, recent actions
+
+  Note over User,Backend: Error Path
+  Backend-->>API: 500 Internal Server Error
+  API-->>TQ: Throws Error
+  TQ-->>Dashboard: { error: Error }
+  Dashboard->>User: "Failed to load dashboard data" + Retry button
+```
+
+**Key Invariants:**
+- Dashboard summary and vehicle list are fetched in parallel (no waterfall)
+- Recharts components are dynamically imported (code splitting)
+- Recent actions are derived client-side from vehicle action arrays
+- TanStack Query caches responses (30s stale time)
+
+**Error Paths:**
+| Condition | Response | Rollback |
+|-----------|----------|----------|
+| API unreachable | Error state with retry button | None — read-only |
+| Partial failure (summary OK, vehicles fail) | Dashboard renders stats, vehicles section shows error | None |
+
+### 1.7 Frontend Runtime Flow: Vehicle List Filter/Sort/Paginate
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant Inventory as Inventory Page
+  participant Filters as VehicleFilters
+  participant State as React State
+  participant TQ as TanStack Query
+  participant API as apiFetch
+  participant Backend as Backend API
+
+  User->>Filters: Type search text / select make / toggle aging
+  Filters->>Filters: Debounce search (300ms)
+  Filters->>State: Update filters + reset page to 1
+  State->>TQ: useVehicles({ make, status, aging, sort_by, order, page })
+  Note over TQ: queryKey includes all params → automatic refetch on change
+  TQ->>API: GET /api/v1/vehicles?make=Toyota&aging=true&page=1
+  API->>Backend: HTTP GET with query params
+  Backend-->>API: 200 PaginatedVehicles { items, total, page, total_pages }
+  API-->>TQ: Parsed response
+  TQ-->>Inventory: { data: PaginatedVehicles }
+  Inventory->>Inventory: Client-side search filter (VIN/make/model)
+  Inventory->>User: Render filtered table + pagination
+
+  User->>Inventory: Click column header (sort)
+  Inventory->>State: Toggle sort_by + order, reset page
+  State->>TQ: New query with updated params
+  Note over TQ: Previous cache kept until new data arrives
+
+  User->>Inventory: Click page number
+  Inventory->>State: Update page number
+  State->>TQ: useVehicles with new page
+```
+
+**Key Invariants:**
+- Search is debounced (300ms) to prevent excessive API calls
+- Page resets to 1 when filters change
+- Sort toggle cycles: column desc → asc → different column desc
+- Client-side search filters the already-fetched page (VIN/make/model text match)
+
+### 1.8 Frontend Runtime Flow: Create Vehicle Action
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant Form as ActionForm
+  participant Mutation as useCreateVehicleAction
+  participant TQ as TanStack Query
+  participant API as apiFetch
+  participant Backend as Backend API
+
+  User->>Form: Select action type, enter notes, enter name
+  User->>Form: Click "Log Action"
+  Form->>Form: Client-side validation (required fields)
+  Form->>Mutation: mutate({ action_type, notes, created_by })
+  Mutation->>API: POST /api/v1/vehicles/{id}/actions
+  API->>Backend: HTTP POST with JSON body
+  Backend->>Backend: Validate vehicle exists + action_type enum
+  Backend-->>API: 201 VehicleAction
+  API-->>Mutation: Parsed response
+  Mutation->>TQ: invalidateQueries(["vehicles", vehicleId])
+  Mutation->>TQ: invalidateQueries(["vehicles"])
+  Mutation->>TQ: invalidateQueries(["dashboard"])
+  Note over TQ: Three query invalidations trigger refetch
+  Mutation-->>Form: onSuccess callback
+  Form->>Form: Reset form fields
+  Form->>User: "Action logged successfully!"
+
+  Note over User,Backend: Error Path
+  Backend-->>API: 400 Invalid request / 404 Vehicle not found
+  API-->>Mutation: Throws Error
+  Mutation-->>Form: isError = true
+  Form->>User: "Failed to log action. Please try again."
+```
+
+**Key Invariants:**
+- Actions are append-only (no edit/delete)
+- Form requires action_type (enum) and created_by (string)
+- On success: three query families are invalidated (vehicle detail, vehicle list, dashboard)
+- Server validates action_type against enum — client validation is for UX only
+
+**Error Paths:**
+| Condition | Response | Rollback |
+|-----------|----------|----------|
+| Invalid action_type | 400 from server, form shows error | Form state preserved |
+| Vehicle not found | 404 from server, form shows error | Form state preserved |
+| Network error | Mutation error state, form shows error | Form state preserved |
+
+### 1.10 Health Check Flow
 
 ```mermaid
 sequenceDiagram
@@ -135,7 +314,7 @@ sequenceDiagram
 | DB connection refused | 503 `{status: unhealthy}` | None — read-only operation |
 | DB timeout | 503 `{status: unhealthy}` | None — context cancellation propagates |
 
-### 1.6 Server Startup Flow
+### 1.11 Server Startup Flow
 
 ```mermaid
 flowchart TD
