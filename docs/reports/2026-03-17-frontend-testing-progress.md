@@ -1,0 +1,45 @@
+# Frontend Testing — Implementation Progress
+
+## Metadata
+- **Feature:** Frontend Testing (Vitest + React Testing Library + Playwright)
+- **Plan file:** `docs/plans/2026-03-17-frontend-testing-plan.md`
+- **Spec file:** `docs/specs/2026-03-17-frontend-testing-spec.md`
+- **Started:** 2026-03-17T00:00:00Z
+- **Last updated:** 2026-03-17T00:00:00Z
+- **Current state:** in_progress
+- **Current task:** 2
+
+## Task Progress
+
+| # | Task Name | Status | Commit | Summary |
+|---|-----------|--------|--------|---------|
+| 1 | Vitest + React Testing Library Setup | done | — | Installed vitest, RTL, jsdom; created vitest.config.ts, setup.ts, test-utils.tsx, mocks.ts |
+| 2 | Hook Tests — useDashboardSummary | pending | — | — |
+| 3 | Hook Tests — useVehicles | pending | — | — |
+| 4 | Hook Tests — useVehicle | pending | — | — |
+| 5 | Hook Tests — useCreateVehicleAction | pending | — | — |
+| 6 | Component Tests — Simple components | pending | — | — |
+| 7 | Component Tests — Pagination | pending | — | — |
+| 8 | Component Tests — VehicleFilters | pending | — | — |
+| 9 | Component Tests — VehicleInfoCard, ActionTimeline, ActionForm | pending | — | — |
+| 10 | Page Tests — Dashboard | pending | — | — |
+| 11 | Page Tests — Inventory | pending | — | — |
+| 12 | Page Tests — Aging Stock | pending | — | — |
+| 13 | Page Tests — Vehicle Detail | pending | — | — |
+| 14 | Run Full Test Suite + Coverage | pending | — | — |
+| 15 | Playwright E2E Setup | pending | — | — |
+
+**Status values:** `pending` | `in_progress` | `done` | `skipped`
+
+## Resume Instructions
+
+To resume this implementation in a new session:
+1. Read this progress file
+2. Read the plan file referenced above
+3. Check `git log --oneline -10` to verify last commit matches the last `done` task
+4. Check `git status` for any uncommitted work
+5. Continue from the next `pending` task using the same checkpoint protocol
+
+## Notes
+
+- No prior progress — starting fresh
