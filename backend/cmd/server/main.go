@@ -23,6 +23,8 @@ import (
 	"github.com/khanh/intelligent-inventory-dashboard/backend/internal/service"
 )
 
+const cacheTTL = 30 * time.Second
+
 const version = "1.0.0"
 
 func main() {
@@ -67,7 +69,21 @@ func main() {
 	// Create layers
 	healthRepo := repository.NewHealthRepository(pool)
 	healthSvc := service.NewHealthService(healthRepo, version)
-	srv := handler.NewServer(healthSvc)
+
+	dealershipRepo := repository.NewDealershipRepository(pool)
+	dealershipSvc := service.NewDealershipService(dealershipRepo)
+
+	vehicleRepo := repository.NewVehicleRepository(pool)
+	vehicleSvc := service.NewVehicleService(vehicleRepo)
+
+	dashboardRepo := repository.NewDashboardRepository(pool)
+	dashboardCache := service.NewDashboardCache(cacheTTL)
+	dashboardSvc := service.NewDashboardService(dashboardRepo, dashboardCache)
+
+	actionRepo := repository.NewVehicleActionRepository(pool)
+	actionSvc := service.NewVehicleActionService(actionRepo, vehicleRepo, dashboardCache)
+
+	srv := handler.NewServer(healthSvc, dealershipSvc, vehicleSvc, actionSvc, dashboardSvc)
 
 	// Create strict handler from oapi-codegen generated interface
 	strictHandler := handler.NewStrictHandler(srv, nil)
