@@ -7,17 +7,17 @@
 - **Started:** 2026-03-17T00:00:00Z
 - **Last updated:** 2026-03-17T00:00:00Z
 - **Current state:** in_progress
-- **Current task:** 2
+- **Current task:** 6
 
 ## Task Progress
 
 | # | Task Name | Status | Commit | Summary |
 |---|-----------|--------|--------|---------|
 | 1 | Vitest + React Testing Library Setup | done | — | Installed vitest, RTL, jsdom; created vitest.config.ts, setup.ts, test-utils.tsx, mocks.ts |
-| 2 | Hook Tests — useDashboardSummary | pending | — | — |
-| 3 | Hook Tests — useVehicles | pending | — | — |
-| 4 | Hook Tests — useVehicle | pending | — | — |
-| 5 | Hook Tests — useCreateVehicleAction | pending | — | — |
+| 2 | Hook Tests — useDashboardSummary | done | — | 3 tests: fetch URL, data shape, error |
+| 3 | Hook Tests — useVehicles | done | — | 4 tests: no params, query string, empty, error |
+| 4 | Hook Tests — useVehicle | done | — | 4 tests: fetch by ID, disabled, 404, 500 |
+| 5 | Hook Tests — useCreateVehicleAction | done | — | 3 tests: POST body, invalidates queries, 400 error |
 | 6 | Component Tests — Simple components | pending | — | — |
 | 7 | Component Tests — Pagination | pending | — | — |
 | 8 | Component Tests — VehicleFilters | pending | — | — |
