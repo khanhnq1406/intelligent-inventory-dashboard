@@ -403,3 +403,42 @@ Any API change starts with editing `openapi.yaml`, then running `make generate` 
 - **Authentication:** Add JWT-based auth middleware; role-based access per dealership
 - **Real-time:** WebSocket or SSE for live inventory updates across browser sessions
 - **Multi-tenancy:** Current schema supports it via `dealership_id`; add row-level security in PostgreSQL
+
+---
+
+## 11. GenAI-Assisted Design Process
+
+### 11.1 How GenAI Was Used
+
+GenAI served as a **collaborative design partner** throughout the system design phase, accelerating decision-making while keeping the human architect in full control of every choice.
+
+### 11.2 Design Phase Workflow
+
+1. **Requirements Decomposition:** The project requirements were provided as input. GenAI helped break them into discrete architectural decisions that needed to be made (database choice, framework selection, shared type strategy, etc.).
+
+2. **Technology Evaluation:** For each decision point, GenAI proposed 2–3 options with trade-off analysis. The human architect evaluated each recommendation and made the final selection. Examples:
+   - **Shared type generation:** OpenAPI/Swagger vs Protocol Buffers vs JSON Schema — OpenAPI was selected for its natural fit with REST APIs and mature tooling for both Go and TypeScript.
+   - **Database:** PostgreSQL vs SQLite vs MongoDB — PostgreSQL was selected for its relational strength, indexing capabilities, and production readiness.
+   - **Go framework:** Chi vs Gin vs stdlib — Chi was selected for its idiomatic design and native oapi-codegen integration.
+
+3. **Iterative Design Validation:** The design document was produced in sections (architecture, data model, API design, data flow, observability). Each section was reviewed and approved before proceeding to the next, ensuring no compounding errors.
+
+4. **Schema & API Design:** GenAI drafted the database schema and REST endpoint design based on the core requirements. The human architect validated that aging stock is computed (not stored), actions are append-only for audit trails, and pagination is included for scalability.
+
+### 11.3 What GenAI Did Well
+
+- **Rapid exploration of trade-offs** — Comparing frameworks and libraries across Go and TypeScript ecosystems in minutes rather than hours of manual research.
+- **Consistency enforcement** — Ensuring naming conventions, data types, and API patterns remained consistent across the full design document.
+- **Boilerplate reduction** — Generating the complete SQL schema, API endpoint table, and data flow diagrams from high-level requirements.
+
+### 11.4 Where Human Judgment Was Critical
+
+- **Technology selection** — Every technology choice was a human decision. GenAI provided options and recommendations; the architect made the call.
+- **Business logic decisions** — The choice to compute aging dynamically rather than store it, the append-only action log pattern, and the separation of `stocked_at` from `created_at` were all human architectural decisions.
+- **Scope control** — GenAI tends toward comprehensive solutions. The architect actively scoped down to what was needed (e.g., structured logging over a full OpenTelemetry stack, basic metrics over Grafana dashboards).
+
+### 11.5 Verification Process
+
+- Each design section was reviewed for correctness before being incorporated.
+- The final document was validated against the original requirements to ensure all three core requirements (inventory visualization, aging stock identification, actionable insights) were fully addressed.
+- Technology justifications were cross-checked to ensure they matched real-world capabilities and version compatibility.
