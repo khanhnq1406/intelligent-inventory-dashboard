@@ -62,6 +62,79 @@ intelligent-inventory-dashboard/
 └── docs/                       # Design documents
 ```
 
+### 1.4 L3 Backend Component Diagram
+
+```mermaid
+C4Component
+  title Backend API — Component Diagram
+
+  Container_Boundary(api, "Backend API") {
+    Component(handler, "HTTP Handlers", "Go, oapi-codegen", "Generated Chi handlers + custom implementations")
+    Component(middleware, "Middleware", "Go", "Request ID, Logging, CORS, Duration")
+    Component(service, "Service Layer", "Go", "Business logic, validation, aging computation")
+    Component(repository, "Repository Layer", "Go, pgx", "Database queries, parameterized SQL")
+    Component(config, "Config", "Go", "Environment-based configuration")
+    Component(models, "Domain Models", "Go", "Dealership, Vehicle, VehicleAction structs")
+  }
+
+  ContainerDb(db, "PostgreSQL 16", "Database", "Stores dealerships, vehicles, vehicle_actions")
+
+  Rel(middleware, handler, "wraps")
+  Rel(handler, service, "calls")
+  Rel(service, repository, "calls")
+  Rel(service, models, "uses")
+  Rel(repository, db, "pgx queries")
+  Rel(config, handler, "provides DB pool, ports, CORS origins")
+```
+
+### 1.5 Health Check Flow
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant Middleware as Middleware (RequestID + Logger)
+  participant Handler as Health Handler
+  participant Service as Health Service
+  participant Repo as Health Repository
+  participant DB as PostgreSQL
+
+  Client->>Middleware: GET /health
+  Middleware->>Middleware: Assign X-Request-ID (UUID)
+  Middleware->>Handler: Forward with request_id in context
+  Handler->>Service: Check(ctx)
+  Service->>Repo: Ping(ctx)
+  Repo->>DB: SELECT 1
+  DB-->>Repo: OK
+  Repo-->>Service: nil (no error)
+  Service-->>Handler: HealthStatus{status: healthy, database: connected}
+  Handler-->>Middleware: 200 JSON response
+  Middleware->>Middleware: Log request (method, path, status, duration_ms, request_id)
+  Middleware-->>Client: 200 {status, version, uptime, database, timestamp} + X-Request-ID header
+
+  Note over Client,DB: Error Path
+  Client->>Middleware: GET /health
+  Middleware->>Handler: Forward request
+  Handler->>Service: Check(ctx)
+  Service->>Repo: Ping(ctx)
+  Repo->>DB: SELECT 1
+  DB-->>Repo: connection refused
+  Repo-->>Service: error
+  Service-->>Handler: HealthStatus{status: unhealthy, database: disconnected}
+  Handler-->>Middleware: 503 JSON response
+  Middleware-->>Client: 503 {status: unhealthy, database: disconnected}
+```
+
+**Key Invariants:**
+- Health check always attempts a real database ping — no cached result
+- Request ID is always assigned, even for health checks
+- Error responses never expose internal details (connection strings, stack traces)
+
+**Error Paths:**
+| Condition | Response | Rollback |
+|-----------|----------|----------|
+| DB connection refused | 503 `{status: unhealthy}` | None — read-only operation |
+| DB timeout | 503 `{status: unhealthy}` | None — context cancellation propagates |
+
 ---
 
 ## 2. Component Descriptions
