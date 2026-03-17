@@ -1,15 +1,15 @@
 ---
 name: secure-feature-pipeline
-description: "Use when implementing a new feature from requirement to production in this financial application. Covers the full lifecycle: brainstorm, plan, implement, review, and fix. Invoked with command steps: brainstorm, plan, implement, review, fix."
+description: "Use when implementing a new feature from requirement to production in this inventory management application. Covers the full lifecycle: brainstorm, plan, implement, review, and fix. Invoked with command steps: brainstorm, plan, implement, review, fix."
 ---
 
 # Secure Feature Pipeline
 
 ## Overview
 
-End-to-end feature delivery pipeline for the WealthJourney financial application. Takes a feature from raw requirement through brainstorming, planning, implementation, review, and hotfix — with security, risk assessment, and financial data integrity checks woven into every step.
+End-to-end feature delivery pipeline for the Intelligent Inventory Dashboard. Takes a feature from raw requirement through brainstorming, planning, implementation, review, and hotfix — with security, risk assessment, and data integrity checks woven into every step.
 
-**Core principle:** Financial applications demand defense-in-depth. Every step produces artifacts that feed the next step, and every step includes a dedicated security and risk assessment section.
+**Core principle:** Inventory management applications require defense-in-depth. Every step produces artifacts that feed the next step, and every step includes a dedicated security and risk assessment section.
 
 **Announce at start:** "I'm using the secure-feature-pipeline skill — step: `{step}`."
 
@@ -78,15 +78,15 @@ digraph brainstorm {
 Before asking any questions, explore the codebase to understand:
 
 1. **Existing patterns** — How similar features are already implemented
-2. **Affected files** — Which models, services, handlers, components will be touched
-3. **Data flow** — How data moves through proto → backend → frontend
-4. **Current security measures** — Auth middleware, validation, authorization checks
-5. **Database schema** — Existing tables, relationships, constraints
+2. **Affected files** — Which handlers, services, repositories, components will be touched
+3. **Data flow** — How data moves through OpenAPI → oapi-codegen → backend → frontend types
+4. **Current security measures** — Middleware, validation, authorization checks
+5. **Database schema** — Existing tables (dealerships, vehicles, vehicle_actions), relationships, constraints
 
 Use parallel exploration agents to read:
-- Related `.proto` files
-- Related backend services and handlers
-- Related frontend pages and components
+- `api/openapi.yaml` — API specification (single source of truth)
+- Related backend services and handlers in `backend/internal/`
+- Related frontend pages and components in `frontend/src/`
 - Existing tests for the affected area
 
 ### Question Guidelines
@@ -106,12 +106,12 @@ Before writing the spec, complete this analysis using the checklist in `./securi
 1. **Data Flow Diagram (DFD)** — Map every data flow through trust boundaries (REQUIRED FIRST)
 2. **STRIDE per trust boundary** — Apply STRIDE to each boundary crossing identified in the DFD
 3. **OWASP Top 10 relevance** — Which vulnerabilities apply?
-4. **Financial data integrity** — Can monetary values be manipulated?
-5. **Authorization gaps** — Can users access others' data?
+4. **Data integrity** — Can vehicle data or aging stock calculations be manipulated?
+5. **Authorization gaps** — Can one dealership access another's data?
 6. **Input validation** — What needs server-side validation?
 7. **Rate limiting** — Can this be abused at scale?
 8. **Data exposure** — What sensitive data could leak?
-9. **Audit trail** — What operations need logging?
+9. **Audit trail** — What operations need logging? (vehicle_actions is append-only)
 10. **External dependency risks** — What third-party APIs/packages are involved? What if they fail or are compromised?
 
 **DFD is not optional.** STRIDE without data flows is ad-hoc and misses boundary-crossing threats. See `./security-checklist.md` for the DFD template.
@@ -120,14 +120,9 @@ Before writing the spec, complete this analysis using the checklist in `./securi
 
 **REQUIRED SUB-SKILL:** Use the `c4-architecture` skill for Mermaid C4 diagram syntax, element types, relationship labeling, and best practices. Follow the conventions in that skill when creating or updating any C4 diagram.
 
-Before writing the spec, determine which C4 diagrams need to be **created or updated** for this feature. The project maintains C4 diagrams in `docs/architecture/` using **Mermaid syntax**.
+Before writing the spec, determine which C4 diagrams need to be **created or updated** for this feature. The project maintains architecture documentation in `docs/plans/` using **Mermaid syntax**.
 
-**Existing diagrams:**
-- `c4-context.md` — Level 1: System Context (external integrations)
-- `c4-container.md` — Level 2: Containers (runtime units)
-- `c4-component-backend.md` — Level 3: Backend components (handlers, services, repos)
-- `c4-component-frontend.md` — Level 3: Frontend components (pages, modules, shared)
-- `c4-code-investment.md` — Level 4: Code detail (class diagrams for complex domains)
+**Reference diagram:** `docs/plans/2026-03-17-system-design.md` — Contains C4 Container diagram, high-level architecture, and project structure.
 
 **For each feature, assess:**
 
@@ -135,49 +130,41 @@ Before writing the spec, determine which C4 diagrams need to be **created or upd
 |---------------|---------------|-------------------|
 | L1 Context | New external system integration | Never (rarely changes) |
 | L2 Container | New runtime unit (worker, scheduler) | Never (rarely changes) |
-| L3 Backend | New handler, service, or repository | Never (update existing) |
-| L3 Frontend | New page, feature module, or shared component | Never (update existing) |
-| L4 Code | Complex domain with 3+ models/services | New bounded context |
+| L3 Backend | New handler, service, or repository | Update system design doc |
+| L3 Frontend | New page, feature module, or shared component | Update system design doc |
+| L4 Code | Complex domain with 3+ models/services | New section in system design doc |
 
 **Include in the spec:**
-1. Which existing diagrams need updates (with description of changes)
+1. Which sections of the system design doc need updates (with description of changes)
 2. Whether a new L4 code diagram is needed
-3. Draft the Mermaid diagrams for new L4 code diagrams
+3. Draft the Mermaid diagrams for new diagrams
 
 **Mermaid format conventions** (match existing diagrams):
-- Use `C4Component` for L3 diagrams
+- Use `C4Container` / `C4Component` for architecture diagrams
 - Use `classDiagram` with `direction TB` for L4 code diagrams
 - Include `<<interface>>` annotations for service/repository interfaces
 - Show dependencies between components with labeled arrows
 
 ### Runtime Flow Diagrams (REQUIRED)
 
-After implementation is complete, determine which **runtime flow diagrams** need to be created or updated. C4 diagrams show static structure ("what exists"); flow diagrams show dynamic behavior ("what happens when"). The project maintains flow diagrams in `docs/architecture/flow-*.md` using **Mermaid syntax**.
-
-**Existing flow diagram files:**
-- `flow-auth.md` — OAuth login/register, JWT middleware, session lifecycle
-- `flow-wallet.md` — Create wallet, transfer funds, delete wallet
-- `flow-transaction.md` — Create/update/delete transaction, bank statement import
-- `flow-investment.md` — FIFO sell, buy+lot merge, dividend, market price update, portfolio summary
-- `flow-cross-cutting.md` — FX rate resolution, frontend API lifecycle, background scheduler, currency conversion
+After implementation is complete, determine which **runtime flow diagrams** need to be created or updated. C4 diagrams show static structure ("what exists"); flow diagrams show dynamic behavior ("what happens when").
 
 **For each feature, assess:**
 
 | Condition | Action |
 |-----------|--------|
-| New API endpoint with multi-step business logic | Add sequence diagram to the relevant `flow-*.md` file |
-| New background job or scheduled task | Add to `flow-cross-cutting.md` |
-| New branching/decision logic (e.g., deletion options) | Add flowchart to the relevant `flow-*.md` file |
-| New domain not covered by existing files | Create new `flow-<domain>.md` file |
+| New API endpoint with multi-step business logic | Add sequence diagram to system design doc or a new `docs/plans/flow-*.md` file |
+| New background job or scheduled task | Add to a cross-cutting flow document |
+| New branching/decision logic (e.g., aging stock actions) | Add flowchart |
 | Existing flow changed (new steps, different error paths) | Update the existing diagram |
 | Simple CRUD with no branching or multi-service coordination | No flow diagram needed |
 
 **Include in the spec:**
 1. Which existing flow diagrams need updates (with description of changes)
-2. Whether new flow diagrams are needed (and which file they belong in)
+2. Whether new flow diagrams are needed
 3. Brief description of the flow to be diagrammed
 
-**Flow diagram conventions** (match existing docs):
+**Flow diagram conventions:**
 - `sequenceDiagram` for multi-participant request-response flows (most common)
 - `flowchart TD` for branching/decision logic
 - `stateDiagram-v2` for lifecycle/state-machine flows
@@ -217,16 +204,16 @@ Save to: `docs/specs/YYYY-MM-DD-<feature>-spec.md`
 
 ## Runtime Flow Diagrams
 ### Flow Diagrams to Update
-[Which existing flow-*.md diagrams need changes and what changes]
+[Which existing flow diagrams need changes and what changes]
 
 ### New Flow Diagrams
 [New flows to document — specify target file, diagram type, and brief flow description]
 
 ## Data Model Changes
-[New/modified tables, fields, relationships]
+[New/modified tables, fields, relationships — referencing dealerships, vehicles, vehicle_actions]
 
 ## API Changes
-[New/modified endpoints with request/response shapes]
+[New/modified endpoints with request/response shapes — must be added to api/openapi.yaml first]
 
 ## UI/UX Changes
 [New/modified pages, components, flows]
@@ -235,23 +222,21 @@ Save to: `docs/specs/YYYY-MM-DD-<feature>-spec.md`
 - Follow **mobile-first design** — use `responsive-design` skill for Tailwind breakpoints and layout
 - Follow **ui-ux-pro-max** skill for design system, color palette, typography, accessibility, and component patterns
 - Follow **react-best-practices** skill for performance (no waterfalls, direct imports, dynamic imports for heavy components)
-- This app uses `sm:` at 800px (custom breakpoint) — always verify against `tailwind.config.ts`
+- Components use **shadcn/ui** primitives — check existing components before creating new ones
 
 ### Existing Component Inventory (REQUIRED)
 Before proposing new components, check what already exists and can be reused:
 
 | Need | Existing Component | Location |
 |------|--------------------|----------|
-| [describe need] | [component name or "NEW — create in features/<domain>/components/"] | [path] |
+| [describe need] | [component name or "NEW — create in components/"] | [path] |
 
-**Shared components reference** (`components/`): BaseCard, Button, FormInput, FormSelect, FormNumberInput, FormDatePicker, FormToggle, FormTextarea, FormCreatableSelect, FormWizard, BaseModal, ConfirmationDialog, Success, MobileTable, TanStackTable, BarChart, LineChart, DonutChart, Sparkline, EmptyState, ErrorState, Toast, LoadingSpinner, FullPageLoading, Skeleton, BottomNav, ActiveLink, FloatingActionButton, SVG icons (components/icons/)
-
-**Image components**: `OptimizedImage` (blur placeholder + fallback), `Avatar` (pre-sized: xs/sm/md/lg/xl/full) — both from `components/OptimizedImage.tsx`. Use `next/image` directly for static assets.
+**Component library:** shadcn/ui primitives in `frontend/src/components/ui/`, composed into feature components in `frontend/src/components/`.
 
 ### New Components (if any)
 | Component | Location | Justification (why not reuse existing) |
 |-----------|----------|----------------------------------------|
-| [name] | `features/<domain>/components/` or `components/<category>/` | [reason] |
+| [name] | `frontend/src/components/` | [reason] |
 
 ## Security & Risk Assessment
 
@@ -263,7 +248,7 @@ Before proposing new components, check what already exists and can be reused:
 ### Trust Boundaries
 | Boundary | Crossed By | Security Control |
 |----------|-----------|-----------------|
-| Internet → App | User requests | JWT + validation |
+| Internet → App | User requests | Validation + middleware |
 
 ### Threats Identified (STRIDE per boundary crossing)
 | # | Data Flow | Boundary | STRIDE | Threat | Severity | Mitigation |
@@ -271,7 +256,7 @@ Before proposing new components, check what already exists and can be reused:
 | T-1 | 1 | Internet → App | Tampering | ... | High/Medium/Low | ... |
 
 ### Authorization Rules
-[Who can do what]
+[Who can do what — dealership-scoped access]
 
 ### Input Validation Rules
 [What needs validation, where]
@@ -328,12 +313,12 @@ Save to: `docs/plans/YYYY-MM-DD-<feature>-plan.md`
 **Goal:** [One sentence]
 **Spec:** [Path to spec file]
 **Architecture:** [2-3 sentences]
-**Tech Stack:** [Key technologies]
+**Tech Stack:** Go + Chi + oapi-codegen + pgx | Next.js 14 + TanStack Query + shadcn/ui | PostgreSQL 16
 
 ## Security Implementation Notes
 [Cross-cutting security concerns for the entire feature]
 - Authentication: [how auth is handled]
-- Authorization: [resource ownership checks]
+- Authorization: [dealership-scoped resource ownership checks]
 - Input validation: [server-side validation strategy]
 - Data sanitization: [XSS, injection prevention]
 
@@ -345,9 +330,7 @@ Save to: `docs/plans/YYYY-MM-DD-<feature>-plan.md`
 ### Task 0: Update C4 Architecture Diagrams
 
 **Files:**
-- Modify: `docs/architecture/c4-component-backend.md` (if backend changes)
-- Modify: `docs/architecture/c4-component-frontend.md` (if frontend changes)
-- Create: `docs/architecture/c4-code-<domain>.md` (if new complex domain)
+- Modify: `docs/plans/2026-03-17-system-design.md` (if architecture changes)
 
 **Steps:**
 1. Update existing Mermaid diagrams with new components
@@ -359,8 +342,8 @@ Save to: `docs/plans/YYYY-MM-DD-<feature>-plan.md`
 ### Task N-1: Create/Update Runtime Flow Diagrams
 
 **Files:**
-- Modify: `docs/architecture/flow-<domain>.md` (if updating existing flows)
-- Create: `docs/architecture/flow-<domain>.md` (if new domain)
+- Modify: existing flow diagram file (if updating flows)
+- Create: `docs/plans/flow-<domain>.md` (if new domain)
 
 **Steps:**
 1. Read the implemented service code to trace the actual runtime flow
@@ -368,8 +351,7 @@ Save to: `docs/plans/YYYY-MM-DD-<feature>-plan.md`
 3. Write diagram with: trigger, endpoint, source file reference, error/alternative paths
 4. Add "Key Invariants" section listing business rules maintained during the flow
 5. Add "Error Paths" table (Condition | Response | Rollback)
-6. Update `docs/architecture/README.md` if a new flow file was created (add to Dynamic Behavior Diagrams table)
-7. Commit diagram changes
+6. Commit diagram changes
 
 **When to skip:** Simple CRUD with no branching, no multi-service coordination, and no complex error handling.
 
@@ -399,16 +381,6 @@ Save to: `docs/plans/YYYY-MM-DD-<feature>-plan.md`
 **Step 5: [Additional steps if needed — validation, auth checks, etc.]**
 [Exact code]
 
-**Step N-1: Playwright E2E Audit** *(skip if backend-only task)*
-
-- Identify pages affected by this task
-- Run existing spec: `cd src/wj-client && npx playwright test tests/e2e/<spec>.spec.ts --reporter=list`
-- Update or add Playwright tests following patterns in `tests/e2e/`
-- Run again to confirm green
-- Document result in report under `## Playwright E2E Results`
-
-See `./implementer-prompt.md` for the full Playwright audit protocol.
-
 **Step N: Commit**
 ```
 
@@ -427,10 +399,8 @@ For tasks involving frontend/UI work, include these additional steps:
 
 **Step 0: Component inventory check**
 Search existing components before creating new ones:
-- [ ] Checked `components/` for reusable shared components
-- [ ] Checked `features/<domain>/components/` for feature components
-- [ ] Checked `components/icons/` for SVG icons (not emojis)
-- [ ] Checked `components/OptimizedImage.tsx` for image needs (OptimizedImage, Avatar)
+- [ ] Checked `frontend/src/components/ui/` for shadcn/ui primitives
+- [ ] Checked `frontend/src/components/` for composed feature components
 - Reusing: [list components to reuse]
 - Creating new: [list with justification]
 
@@ -441,18 +411,16 @@ Search existing components before creating new ones:
 
 **Step 5: Responsive & accessibility check**
 - Mobile (375px): [verify no horizontal scroll, touch targets >= 44px]
-- Desktop (800px+): [verify sm: breakpoint layout]
-- Images: Use `next/image` / `OptimizedImage` / `Avatar` (not plain `<img>`)
-- Imports: Direct imports only (not barrel files)
+- Desktop (1024px+): [verify responsive layout]
+- Images: Use `next/image` (not plain `<img>`)
 - Performance: No async waterfalls, dynamic import for heavy components
 
-**Step N-1: Playwright E2E Audit** [per implementer-prompt.md]
 **Step N: Commit**
 ```
 
 **Required sub-skills for frontend tasks:**
 - `ui-ux-pro-max` — Design system, accessibility, component patterns
-- `responsive-design` — Mobile-first Tailwind, custom `sm:` breakpoint at 800px
+- `responsive-design` — Mobile-first Tailwind breakpoints
 - `react-best-practices` — Performance (waterfalls, bundle size, re-renders)
 
 ### Task Granularity (TDD Enforced)
@@ -472,8 +440,7 @@ Each step is one action (2-5 minutes):
 - **Backend service:** Unit test for business logic, edge cases, error paths
 - **Backend handler:** Integration test for HTTP request/response, auth, validation
 - **Frontend component:** Component test for rendering, user interaction, error states
-- **Proto changes:** Verify generated code compiles (`task proto:all && go build ./...`)
-- **Frontend UI changes:** E2E test updated/added in `tests/e2e/` using Playwright (see `./implementer-prompt.md`)
+- **OpenAPI changes:** Verify generated code compiles (`make generate && cd backend && go build ./...`)
 
 **Red flags:**
 - Implementation step before test step = plan violation
@@ -484,10 +451,10 @@ Each step is one action (2-5 minutes):
 
 **Always include dedicated tasks for:**
 - Input validation (server-side, never trust client)
-- Authorization checks (user owns resource)
+- Authorization checks (dealership-scoped data isolation)
 - Rate limiting (if applicable)
 - Error message sanitization (no internal details leaked)
-- Audit logging (for financial operations)
+- Audit logging (for vehicle actions — append-only)
 
 ---
 
@@ -619,7 +586,7 @@ digraph implement {
 
 ### Three-Stage Review (Per Task)
 
-Unlike the standard two-stage review, financial features require **three stages**:
+Each feature task requires **three review stages**:
 
 1. **Spec Compliance Review** — Did they build what was requested? (Use `./spec-reviewer-prompt.md`)
 2. **Security Review** — Are security requirements met? (Use `./security-reviewer-prompt.md`)
@@ -704,8 +671,8 @@ Save to: `docs/reports/YYYY-MM-DD-<feature>-report.md`
 ## Security Implementation Summary
 | Concern | Implementation | Verified |
 |---------|---------------|----------|
-| Input validation | Server-side Zod + Go validators | Yes |
-| Authorization | User ownership check in service layer | Yes |
+| Input validation | Server-side Go validators | Yes |
+| Authorization | Dealership-scoped checks in service layer | Yes |
 | ... | ... | ... |
 
 ## Review Results
@@ -775,26 +742,24 @@ If a session is lost to context compaction or you're starting a new session to c
 
    b. **Security Audit** — Use `./security-audit-prompt.md` for comprehensive security review:
       - OWASP Top 10 check (Phase 2)
-      - Financial-specific audit: monetary integrity, race conditions, FIFO accounting (Phase 3)
+      - Inventory-specific audit: data integrity, aging stock computation, append-only actions (Phase 3)
       - Cross-cutting: error handling, logging, configuration (Phase 4)
       - Frontend security: XSS, data handling (Phase 5)
       - Encryption & data protection: TLS, key management (Phase 6)
       - Runtime security readiness: monitoring, anomaly detection, incident response (Phase 7)
 
    c. **Integration Review** — Verify components work together:
-      - Proto → Backend → Frontend data flow
+      - OpenAPI → Backend → Frontend data flow
       - Error propagation
       - Loading states
       - Edge cases
 
    d. **Architecture Diagram Review** — Verify architecture documentation is updated:
-      - New components reflected in L3 C4 diagrams
+      - New components reflected in system design doc
       - New complex domains have L4 code diagrams
-      - Existing C4 diagrams updated if backend/frontend structure changed
       - Runtime flow diagrams created/updated for new multi-step business logic
       - Flow diagrams accurately trace through actual service code (not hypothetical)
       - Flow diagrams include error paths and key invariants
-      - `docs/architecture/README.md` updated if new flow files were created
       - Mermaid syntax renders correctly
 
 5. **Compile verdict:**
@@ -889,8 +854,8 @@ Use when ANY of these are true:
 - Fix touches **3+ files**
 - Introduces new business logic
 - Changes authorization, validation, or data models
-- Has security implications (auth, money, data exposure)
-- Changes API contracts (proto files)
+- Has security implications (auth, data exposure)
+- Changes API contracts (OpenAPI spec)
 - Root cause analysis reveals a design issue
 
 **Process:**
@@ -938,17 +903,16 @@ Use when ANY of these are true:
 - Marking a task complete with failing tests
 - Accepting "close enough" on security review
 - Leaking internal error details to the frontend
-- Storing monetary values as floats
 - Missing authorization checks on any endpoint
 - Trusting client-side validation alone
 - Adding external dependencies without assessing trust level and failure modes
 - Storing API keys or secrets in code instead of environment variables
-- Missing audit logging for financial operations
-- No graceful degradation when external services fail
+- Missing audit logging for vehicle actions
+- Allowing modification or deletion of vehicle_actions (must be append-only)
+- Storing aging stock status as a field instead of computing it
 - Implementing multi-step business logic without creating/updating runtime flow diagrams
-- Using plain `<img>` tags instead of `next/image` / `OptimizedImage` / `Avatar` without justification
-- Creating new components without checking if `components/` already has a suitable one
-- Barrel file imports instead of direct imports (bundle size impact)
+- Creating new components without checking if shadcn/ui already has a suitable one
+- Manually editing generated files (`api.gen.go`, `types.ts`) instead of updating `api/openapi.yaml`
 - Using the full fix pipeline for a one-line typo fix (use minor fix path)
 - Proceeding to the next task without committing the current task and updating the progress file
 - Proceeding to the next task without showing the user a summary
@@ -959,7 +923,7 @@ Use when ANY of these are true:
 
 - `./implementer-prompt.md` — Implementer agent template
 - `./spec-reviewer-prompt.md` — Spec compliance reviewer template
-- `./security-reviewer-prompt.md` — Security reviewer template (financial-specific)
+- `./security-reviewer-prompt.md` — Security reviewer template
 - `./security-checklist.md` — Security analysis checklist for brainstorm step
 - `./security-audit-prompt.md` — Full security audit template for review step
 - `./code-quality-reviewer-prompt.md` — Code quality reviewer template
@@ -972,12 +936,12 @@ Use when ANY of these are true:
 - subagent-driven-development patterns (from subagent-driven-development skill)
 
 **Required sub-skills by context:**
-- **Any UI/frontend work** → `ui-ux-pro-max` skill (design system, color, typography, accessibility, component patterns) + `responsive-design` skill (mobile-first Tailwind breakpoints, container queries) + `react-best-practices` skill (performance: waterfalls, bundle size, re-renders, next/image)
+- **Any UI/frontend work** → `ui-ux-pro-max` skill (design system, color, typography, accessibility, component patterns) + `responsive-design` skill (mobile-first Tailwind breakpoints) + `react-best-practices` skill (performance: waterfalls, bundle size, re-renders, next/image)
 - **C4 or architecture diagrams** → `c4-architecture` skill (Mermaid C4 syntax, element types, best practices)
 
 **Subagents should follow:**
 - Existing codebase patterns (CLAUDE.md)
-- Protocol Buffer first API design
-- DDD architecture (models → repository → service → handler)
-- Financial data integrity rules (int64 for money, never float)
-- **Mobile-first design** for all frontend work (custom `sm:` breakpoint at 800px in `tailwind.config.ts`)
+- OpenAPI-first API design (`api/openapi.yaml` → `make generate`)
+- Layered architecture (handler → service → repository with pgx)
+- Data integrity rules (aging stock computed, vehicle_actions append-only)
+- **Mobile-first design** for all frontend work (standard Tailwind breakpoints)

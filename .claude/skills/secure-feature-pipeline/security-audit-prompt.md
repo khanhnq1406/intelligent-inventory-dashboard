@@ -9,7 +9,7 @@ Task tool (general-purpose):
   description: "Security audit for [feature name]"
   prompt: |
     You are conducting a comprehensive security audit of a new feature
-    in the WealthJourney personal finance application.
+    in the Intelligent Inventory Dashboard.
 
     ## Feature Summary
 
@@ -25,7 +25,7 @@ Task tool (general-purpose):
 
     ## Your Job
 
-    This is a FINANCIAL application handling real money. Audit with extreme thoroughness.
+    This is an inventory management application for dealerships. Audit with thoroughness.
 
     ### Phase 1: Read Everything
 
@@ -42,13 +42,13 @@ Task tool (general-purpose):
     - Can URL parameters be manipulated to access other records?
 
     **A03 - Injection:**
-    - Any raw SQL queries? (Should use GORM parameterized)
+    - Any raw SQL queries? (Should use pgx parameterized queries)
     - Any user input rendered as HTML without escaping?
     - Any shell commands constructed from user input?
     - Any file paths constructed from user input?
 
     **A04 - Insecure Design:**
-    - Business logic flaws in financial calculations?
+    - Business logic flaws in inventory calculations?
     - Missing rate limiting on sensitive operations?
     - Predictable resource identifiers?
 
@@ -57,19 +57,27 @@ Task tool (general-purpose):
     - Token handling issues?
     - Session management problems?
 
-    ### Phase 3: Financial-Specific Audit
+    ### Phase 3: Inventory-Specific Audit
 
-    **Monetary Value Integrity:**
-    - All monetary values use int64? (grep for float32/float64/parseFloat on money)
-    - Currency arithmetic avoids floating point?
-    - Proper rounding rules?
-    - Int64 overflow checked for large values?
+    **Vehicle Price Validation:**
+    - Vehicle prices are positive values with reasonable range checks?
+    - No floating point precision issues in price comparisons?
+    - VIN format validated (17 characters)?
 
-    **Transaction Integrity:**
-    - Race conditions on balance updates? (concurrent transfers)
-    - Double-spend prevention?
-    - Idempotency for financial operations?
-    - Consistent balance after all operations?
+    **Vehicle Action Integrity:**
+    - Vehicle actions are append-only (no update/delete operations)?
+    - Action records include proper timestamps and actor information?
+    - Idempotency for vehicle action operations where needed?
+
+    **Dealership Data Isolation:**
+    - Users can only access their own dealership's vehicles?
+    - Multi-tenancy checks enforced at the service/repository layer?
+    - No cross-dealership data leakage in queries?
+
+    **Aging Stock Computation Integrity:**
+    - Aging stock always computed server-side (NOW() - stocked_at > 90 days)?
+    - Aging status never stored as a database field?
+    - Consistent aging computation across all endpoints?
 
     **Data Consistency:**
     - Database transactions used for multi-step operations?
@@ -84,7 +92,7 @@ Task tool (general-purpose):
     - Do frontend error messages expose technical details?
 
     **Logging:**
-    - Are financial operations logged?
+    - Are vehicle actions and inventory operations logged?
     - Do logs contain sensitive data (passwords, tokens)?
     - Is there enough info for audit trail?
 
@@ -113,9 +121,7 @@ Task tool (general-purpose):
     - WebSocket connections (if any) use WSS?
 
     **Storage Security:**
-    - Database connections use SSL (Supabase enforces this)?
-    - Redis connections use TLS where available?
-    - File uploads in Supabase Storage have proper access scoping?
+    - Database connections use SSL (PostgreSQL SSL mode)?
     - No sensitive data in client-side storage without justification?
 
     **Key Management:**
@@ -126,27 +132,26 @@ Task tool (general-purpose):
     ### Phase 7: Runtime Security Readiness
 
     **Monitoring & Alerting:**
-    - Are financial operations (transactions, transfers, balance changes) logged with sufficient detail?
-    - Do logs include: user ID, operation type, amounts, timestamps, IP address?
+    - Are vehicle actions (status changes, price updates, stock operations) logged with sufficient detail?
+    - Do logs include: user ID, operation type, vehicle ID, dealership ID, timestamps?
     - Are authentication events logged (login, logout, failed attempts, session revocation)?
-    - Are error rates trackable? (Prometheus metrics exist for market data — verify coverage for new features)
+    - Are error rates trackable? (verify coverage for new features)
 
     **Anomaly Detection Patterns:**
     - Does the feature have rate limiting appropriate to its risk level?
-    - For financial operations: are there safeguards against unusual patterns?
-      - Rapid successive transactions (potential automation abuse)
-      - Transactions at unusual times or amounts (potential account compromise)
+    - For inventory operations: are there safeguards against unusual patterns?
+      - Rapid successive vehicle updates (potential automation abuse)
+      - Bulk operations at unusual times (potential account compromise)
       - Multiple failed operations in sequence (potential brute force)
-    - Are there circuit breakers for external API failures? (Yahoo Finance, vang.today)
 
     **Incident Response Considerations:**
     - Can suspicious sessions be revoked? (session management exists — verify new features integrate)
-    - Can financial operations be audited after the fact? (audit trail completeness)
+    - Can vehicle actions be audited after the fact? (audit trail completeness)
     - Is there enough log data to reconstruct what happened during an incident?
     - Can affected users be identified if a vulnerability is found?
 
     **Graceful Degradation:**
-    - What happens when external services fail? (cache fallback, error messages)
+    - What happens when database connections fail? (error messages, retries)
     - What happens when rate limits are hit? (clear error, not silent failure)
     - What happens when database connections are exhausted? (queue or reject, not hang)
 

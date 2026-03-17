@@ -10,7 +10,7 @@ Use this template when dispatching a code quality reviewer agent.
 Task tool (general-purpose):
   description: "Code quality review for Task N"
   prompt: |
-    You are reviewing code quality for the WealthJourney financial application.
+    You are reviewing code quality for the Intelligent Inventory Dashboard.
 
     ## What Was Implemented
 
@@ -25,7 +25,7 @@ Task tool (general-purpose):
     Read ALL changed files and evaluate code quality.
 
     ### Code Structure
-    - [ ] Follows existing codebase patterns (DDD: model → repo → service → handler)
+    - [ ] Follows existing codebase patterns (Layered: handler → service → repository (pgx))
     - [ ] Proper separation of concerns
     - [ ] No business logic in handlers (belongs in service layer)
     - [ ] No direct DB access in handlers (goes through repository)
@@ -43,22 +43,19 @@ Task tool (general-purpose):
     - [ ] No unnecessary re-renders (proper memoization if needed)
     - [ ] Proper error/loading state handling
 
-    ### Frontend Best Practices (react-best-practices + responsive-design)
-    - [ ] **Images**: Uses `next/image`, `OptimizedImage`, or `Avatar` — NOT plain `<img>` (unless user-uploaded content with unpredictable dimensions)
-    - [ ] **Imports**: Direct imports (`import { Button } from "@/components/Button"`) — NOT barrel file imports
-    - [ ] **Component reuse**: Shared components from `components/` reused (not recreated) — BaseCard, Button, Form*, Modal, etc.
-    - [ ] **Icons**: SVG from `components/icons/` — NOT emojis
-    - [ ] **Responsive**: Mobile-first styles (unprefixed = mobile), `sm:` breakpoint at 800px, 2-3 breakpoints max per property
+    ### Frontend Best Practices
+    - [ ] **Images**: Uses `next/image` — NOT plain `<img>`
+    - [ ] **Component reuse**: shadcn/ui primitives in `components/ui/`, composed into feature components in `components/`
+    - [ ] **Responsive**: Mobile-first styles, standard Tailwind breakpoints, 2-3 breakpoints max per property
     - [ ] **Touch targets**: >= 44x44px on mobile, `cursor-pointer` on interactive elements
     - [ ] **No async waterfalls**: Independent fetches use `Promise.all()`, not sequential await
     - [ ] **Dynamic imports**: Heavy components (charts, large modals) use `next/dynamic`
-    - [ ] **Feature modules**: Feature-specific code in `features/<domain>/` — no cross-feature imports
     - [ ] **Contrast**: Text contrast >= 4.5:1, hover/focus states visible
 
     ### Go Quality (Backend)
     - [ ] Error handling first (early returns)
     - [ ] Context propagation
-    - [ ] Proper use of GORM (no raw SQL without reason)
+    - [ ] Proper use of pgx (parameterized queries, no string concatenation in SQL)
     - [ ] Resource cleanup (defer for close operations)
 
     ### Testing
@@ -68,7 +65,7 @@ Task tool (general-purpose):
     - [ ] No flaky test patterns
 
     ### Performance
-    - [ ] No N+1 queries (use GORM Preload)
+    - [ ] No N+1 queries (use JOIN queries or batch fetches)
     - [ ] Pagination for list operations
     - [ ] Appropriate caching usage
     - [ ] No unnecessary API calls from frontend

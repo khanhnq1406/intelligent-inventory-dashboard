@@ -2,7 +2,7 @@
 
 Use this template when dispatching a security reviewer agent after spec compliance passes.
 
-**Purpose:** Verify implementation meets security requirements for a financial application.
+**Purpose:** Verify implementation meets security requirements for an inventory management application.
 
 **Only dispatch after spec compliance review passes.**
 
@@ -10,8 +10,8 @@ Use this template when dispatching a security reviewer agent after spec complian
 Task tool (general-purpose):
   description: "Security review for Task N"
   prompt: |
-    You are a security reviewer for the WealthJourney personal finance application.
-    This is a FINANCIAL application — security is non-negotiable.
+    You are a security reviewer for the Intelligent Inventory Dashboard.
+    This is an inventory management application — security is non-negotiable.
 
     ## What Was Implemented
 
@@ -39,13 +39,15 @@ Task tool (general-purpose):
     - [ ] All user inputs validated SERVER-SIDE (not just frontend)
     - [ ] String inputs: length limits, character whitelist where appropriate
     - [ ] Numeric inputs: range checks, integer overflow prevention
-    - [ ] Monetary values: use int64, validated ranges, currency code validation
+    - [ ] Vehicle prices: reasonable range checks, positive values
+    - [ ] VIN: format validation (17 characters)
+    - [ ] Dates: stocked_at must be past date
     - [ ] Date inputs: validated format and reasonable ranges
     - [ ] Enum inputs: validated against known values
     - [ ] File uploads (if any): type validation, size limits
 
     ### 3. Injection Prevention
-    - [ ] SQL: All queries use GORM parameterized queries (no raw SQL with string concat)
+    - [ ] SQL: All queries use pgx parameterized queries (no string concatenation in SQL)
     - [ ] XSS: User-generated content escaped before rendering
     - [ ] Command injection: No shell commands with user input
     - [ ] Path traversal: No file paths constructed from user input
@@ -56,36 +58,33 @@ Task tool (general-purpose):
     - [ ] Logs don't contain sensitive data
     - [ ] No hardcoded secrets or credentials in code
 
-    ### 5. Financial Data Integrity
-    - [ ] Monetary values stored as int64 (NEVER float)
-    - [ ] Currency arithmetic avoids floating point
-    - [ ] Race conditions prevented for balance updates (transactions, transfers)
-    - [ ] Idempotency for financial operations where needed
-    - [ ] Proper rounding rules applied
+    ### 5. Data Integrity
+    - [ ] Aging stock always computed (NOW() - stocked_at > 90 days), never stored
+    - [ ] Vehicle actions are append-only (no update/delete)
+    - [ ] Dealership data isolation (multi-tenancy checks)
+    - [ ] Concurrent stock updates handled properly
 
     ### 6. Rate Limiting & Abuse Prevention
     - [ ] Sensitive operations have rate limiting
     - [ ] Bulk operations have reasonable limits
     - [ ] No resource exhaustion vectors (unbounded queries, large payloads)
 
-    ### 7. Session & Token Security
-    - [ ] Tokens have appropriate expiration
+    ### 7. Session & Token Security (auth approach TBD)
+    - [ ] Tokens have appropriate expiration (if auth is implemented)
     - [ ] Sensitive operations re-verify authentication
     - [ ] Session invalidation works correctly
 
     ### 8. Encryption & Data Protection
     - [ ] All API communications over HTTPS/TLS (no mixed content)
-    - [ ] Database connections use SSL (Supabase enforces this)
+    - [ ] Database connections use SSL
     - [ ] No sensitive data (passwords, tokens, API keys) stored in plaintext
     - [ ] API keys and secrets in environment variables, not in code
-    - [ ] File uploads (bank statements) have scoped access and signed URLs
-    - [ ] Redis connections use TLS where available
 
     ### 9. Data Governance
+    - [ ] Dealership data isolation enforced (users only see their dealership's data)
+    - [ ] Vehicle record retention policies considered
+    - [ ] Vehicle actions provide complete audit trail (append-only, no deletions)
     - [ ] Feature doesn't collect more data than necessary (data minimization)
-    - [ ] User data deletion path exists (if feature creates new user data)
-    - [ ] Financial operations have audit trail (logged with before/after state)
-    - [ ] Data sent to external APIs is minimized (no unnecessary user data)
 
     ## Report Format
 
@@ -94,7 +93,7 @@ Task tool (general-purpose):
     - FAIL: [specific issue with file:line reference and severity]
 
     Severity levels:
-    - **CRITICAL** — Must fix before merge (data breach, auth bypass, money manipulation)
+    - **CRITICAL** — Must fix before merge (data breach, auth bypass, data integrity violation)
     - **HIGH** — Should fix before merge (information disclosure, missing validation)
     - **MEDIUM** — Fix soon (defense-in-depth gaps, logging issues)
     - **LOW** — Nice to have (code hardening, additional checks)

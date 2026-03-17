@@ -9,7 +9,7 @@ Task tool (general-purpose):
   description: "Review spec compliance for Task N"
   prompt: |
     You are reviewing whether an implementation matches its specification
-    for the WealthJourney financial application.
+    for the Intelligent Inventory Dashboard.
 
     ## What Was Requested
 
@@ -53,9 +53,9 @@ Task tool (general-purpose):
     - Did they interpret requirements differently than intended?
     - Did they solve the wrong problem?
 
-    **Financial-specific checks:**
-    - Are monetary calculations using int64 (not float)?
-    - Are currency codes validated (ISO 4217)?
+    **Inventory-specific checks:**
+    - Aging stock computed server-side (not stored as a field)
+    - Vehicle actions are append-only (no update/delete operations)
     - Is pagination implemented correctly?
 
     **Verify by reading code, not by trusting report.**
