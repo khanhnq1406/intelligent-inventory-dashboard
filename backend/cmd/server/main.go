@@ -12,6 +12,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/khanh/intelligent-inventory-dashboard/backend/internal/config"
 	"github.com/khanh/intelligent-inventory-dashboard/backend/internal/handler"
@@ -44,6 +47,22 @@ func main() {
 	if err := pool.Ping(ctx); err != nil {
 		logger.Warn("database not reachable at startup", slog.String("error", err.Error()))
 	}
+
+	// Run database migrations
+	m, err := migrate.New("file:///migrations", cfg.DatabaseURL)
+	if err != nil {
+		// Try local path for development
+		m, err = migrate.New("file://migrations", cfg.DatabaseURL)
+		if err != nil {
+			logger.Error("failed to create migrate instance", slog.String("error", err.Error()))
+			os.Exit(1)
+		}
+	}
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		logger.Error("failed to run migrations", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+	logger.Info("database migrations applied successfully")
 
 	// Create layers
 	healthRepo := repository.NewHealthRepository(pool)
