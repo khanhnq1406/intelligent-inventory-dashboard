@@ -17,6 +17,10 @@ func (m *mockHealthService) Check(_ context.Context) (*models.HealthStatus, erro
 	return m.status, m.err
 }
 
+func newTestServer(healthSvc *mockHealthService) *Server {
+	return NewServer(healthSvc, nil, nil, nil, nil)
+}
+
 func TestGetHealth_Healthy(t *testing.T) {
 	svc := &mockHealthService{
 		status: &models.HealthStatus{
@@ -26,7 +30,7 @@ func TestGetHealth_Healthy(t *testing.T) {
 			Uptime:   "1m0s",
 		},
 	}
-	server := NewServer(svc)
+	server := newTestServer(svc)
 
 	resp, err := server.GetHealth(context.Background(), GetHealthRequestObject{})
 	if err != nil {
@@ -47,7 +51,7 @@ func TestGetHealth_Unhealthy(t *testing.T) {
 			Uptime:   "1m0s",
 		},
 	}
-	server := NewServer(svc)
+	server := newTestServer(svc)
 
 	resp, err := server.GetHealth(context.Background(), GetHealthRequestObject{})
 	if err != nil {
@@ -67,7 +71,7 @@ func TestGetHealth_ServiceError(t *testing.T) {
 		},
 		err: errors.New("service error"),
 	}
-	server := NewServer(svc)
+	server := newTestServer(svc)
 
 	resp, err := server.GetHealth(context.Background(), GetHealthRequestObject{})
 	if err != nil {
