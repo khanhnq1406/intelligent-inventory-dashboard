@@ -135,6 +135,53 @@ sequenceDiagram
 | DB connection refused | 503 `{status: unhealthy}` | None — read-only operation |
 | DB timeout | 503 `{status: unhealthy}` | None — context cancellation propagates |
 
+### 1.6 Server Startup Flow
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Load config from env vars]
+    B --> C{DATABASE_URL set?}
+    C -->|No| D[Exit with error: DATABASE_URL required]
+    C -->|Yes| E[Create pgx connection pool]
+    E --> F{Pool created?}
+    F -->|No| G[Exit with error: failed to create pool]
+    F -->|Yes| H[Ping database]
+    H --> I{Ping successful?}
+    I -->|No| J[Log warning: DB not reachable]
+    I -->|Yes| K[DB connected]
+    J --> L[Create migrate instance]
+    K --> L
+    L --> M{Migrations source found?}
+    M -->|No| N[Exit with error: migration source not found]
+    M -->|Yes| O[Run m.Up]
+    O --> P{Migration result?}
+    P -->|Error| Q[Exit with error: migration failed]
+    P -->|ErrNoChange| R[Log: no new migrations]
+    P -->|Success| S[Log: migrations applied]
+    R --> T[Create repository layer]
+    S --> T
+    T --> U[Create service layer]
+    U --> V[Create handler layer]
+    V --> W[Configure Chi router + middleware]
+    W --> X[Start HTTP server on :PORT]
+    X --> Y[Wait for SIGINT/SIGTERM]
+    Y --> Z[Graceful shutdown with 10s timeout]
+    Z --> AA[Server stopped]
+```
+
+**Key Invariants:**
+- Config validation happens before any I/O (fail fast)
+- Migrations run before HTTP server starts (schema is always up-to-date)
+- Graceful shutdown waits up to 10s for in-flight requests to complete
+
+**Error Paths:**
+| Condition | Response | Rollback |
+|-----------|----------|----------|
+| DATABASE_URL missing | Exit code 1, error log | None |
+| Pool creation failure | Exit code 1, error log | None |
+| Migration failure | Exit code 1, error log | None — manual rollback via `make migrate-down` |
+| SIGINT/SIGTERM received | Graceful shutdown | In-flight requests complete, pool closed |
+
 ---
 
 ## 2. Component Descriptions
