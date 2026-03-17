@@ -7,7 +7,7 @@
 - **Started:** 2026-03-17T00:00:00Z
 - **Last updated:** 2026-03-17T00:00:00Z
 - **Current state:** in_progress
-- **Current task:** 14
+- **Current task:** 15
 
 ## Task Progress
 
@@ -26,7 +26,7 @@
 | 11 | Page Tests — Inventory | done | — | 7 tests: title, table, rows, empty, error, row click, pagination |
 | 12 | Page Tests — Aging Stock | done | — | 7 tests: title, alert banner, stats cards, progress bar, empty, error, log action |
 | 13 | Page Tests — Vehicle Detail | done | — | 7 tests: info card, timeline, form, loading, error, not found, back link |
-| 14 | Run Full Test Suite + Coverage | pending | — | — |
+| 14 | Run Full Test Suite + Coverage | done | — | 108/108 tests pass; 84.72% statement coverage |
 | 15 | Playwright E2E Setup | pending | — | — |
 
 **Status values:** `pending` | `in_progress` | `done` | `skipped`
