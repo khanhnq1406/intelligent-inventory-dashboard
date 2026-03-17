@@ -7,7 +7,7 @@
 - **Started:** 2026-03-17T00:00:00Z
 - **Last updated:** 2026-03-17T00:00:00Z
 - **Current state:** in_progress
-- **Current task:** 6
+- **Current task:** 10
 
 ## Task Progress
 
@@ -18,10 +18,10 @@
 | 3 | Hook Tests — useVehicles | done | — | 4 tests: no params, query string, empty, error |
 | 4 | Hook Tests — useVehicle | done | — | 4 tests: fetch by ID, disabled, 404, 500 |
 | 5 | Hook Tests — useCreateVehicleAction | done | — | 3 tests: POST body, invalidates queries, 400 error |
-| 6 | Component Tests — Simple components | pending | — | — |
-| 7 | Component Tests — Pagination | pending | — | — |
-| 8 | Component Tests — VehicleFilters | pending | — | — |
-| 9 | Component Tests — VehicleInfoCard, ActionTimeline, ActionForm | pending | — | — |
+| 6 | Component Tests — Simple components | done | — | 26 tests: Sidebar, StatsCard, StatusBadge, ActionBadge, AgingProgressBar |
+| 7 | Component Tests — Pagination | done | — | 8 tests: page info, buttons, navigation, ellipsis |
+| 8 | Component Tests — VehicleFilters | done | — | 9 tests: render, dropdowns, aging toggle, debounce, count |
+| 9 | Component Tests — VehicleInfoCard, ActionTimeline, ActionForm | done | — | 25 tests across 3 components |
 | 10 | Page Tests — Dashboard | pending | — | — |
 | 11 | Page Tests — Inventory | pending | — | — |
 | 12 | Page Tests — Aging Stock | pending | — | — |
