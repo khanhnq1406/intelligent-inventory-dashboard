@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+backend/bin/
+frontend/.next/
+frontend/out/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+__debug_bin*
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+*.cover
+*.prof
+
+# Docker
+.docker/
+
+# Temporary files
+tmp/
+temp/

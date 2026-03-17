@@ -1,0 +1,15 @@
+{
+  "name": "intelligent-inventory-dashboard",
+  "version": "1.0.0",
+  "description": "A real-time inventory management dashboard for dealership managers — providing vehicle stock overview, aging stock identification (>90 days), and actionable insights.",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "husky": "^9.1.7"
+  }
+}
