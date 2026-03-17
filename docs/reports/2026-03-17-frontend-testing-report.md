@@ -122,3 +122,9 @@ npm run test:e2e:ui         # Run with Playwright UI mode
 - Inventory page coverage is 50% (statements) because the sorting and client-side filter functions are not fully tested; these code paths are covered by E2E tests instead.
 - `test-utils.tsx` has 57% coverage since only `createWrapper` and `createTestQueryClient` are used directly (the `renderWithProviders` export is less commonly used).
 - E2E tests require the full stack running (backend + database) since they test against the real app.
+
+## Fix History
+
+| Date | Fix | Severity | Commit |
+|------|-----|----------|--------|
+| 2026-03-17 | Added unit/component tests and E2E tests to `ci-frontend.yml` GitHub Actions workflow | Minor | — |
