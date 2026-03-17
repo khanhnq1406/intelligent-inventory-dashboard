@@ -7,7 +7,7 @@
 - **Started:** 2026-03-17T00:00:00Z
 - **Last updated:** 2026-03-17T00:00:00Z
 - **Current state:** in_progress
-- **Current task:** 10
+- **Current task:** 14
 
 ## Task Progress
 
@@ -22,10 +22,10 @@
 | 7 | Component Tests — Pagination | done | — | 8 tests: page info, buttons, navigation, ellipsis |
 | 8 | Component Tests — VehicleFilters | done | — | 9 tests: render, dropdowns, aging toggle, debounce, count |
 | 9 | Component Tests — VehicleInfoCard, ActionTimeline, ActionForm | done | — | 25 tests across 3 components |
-| 10 | Page Tests — Dashboard | pending | — | — |
-| 11 | Page Tests — Inventory | pending | — | — |
-| 12 | Page Tests — Aging Stock | pending | — | — |
-| 13 | Page Tests — Vehicle Detail | pending | — | — |
+| 10 | Page Tests — Dashboard | done | — | 5 tests: stats cards, recent actions, loading, error, no actions |
+| 11 | Page Tests — Inventory | done | — | 7 tests: title, table, rows, empty, error, row click, pagination |
+| 12 | Page Tests — Aging Stock | done | — | 7 tests: title, alert banner, stats cards, progress bar, empty, error, log action |
+| 13 | Page Tests — Vehicle Detail | done | — | 7 tests: info card, timeline, form, loading, error, not found, back link |
 | 14 | Run Full Test Suite + Coverage | pending | — | — |
 | 15 | Playwright E2E Setup | pending | — | — |
 
