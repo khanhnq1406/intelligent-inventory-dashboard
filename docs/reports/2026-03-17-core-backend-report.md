@@ -70,6 +70,13 @@ Implemented all 6 backend endpoints (ListDealerships, ListVehicles, GetVehicle, 
 - `backend/internal/handler/handler_test.go` — 20 handler tests
 - `backend/cmd/server/main.go` — Wired all new services
 
+## Fix History
+
+| Date | Fix | Severity | Files Changed |
+|------|-----|----------|---------------|
+| 2026-03-17 | Fix `gofmt` formatting in `vehicle_test.go` (struct field alignment) | Minor | `backend/internal/service/vehicle_test.go` |
+| 2026-03-17 | Upgrade Next.js 14.2.35 → 15.5.13 and eslint-config-next 14.2.35 → 15.5.13 to resolve 4 high-severity npm audit vulnerabilities (glob CLI injection GHSA-5j98-mcp5-4vw2, Next.js DoS GHSA-9g9p-9gw9-jx7f, Next.js RSC deserialization DoS GHSA-h25m-26qc-wcjf) | Minor | `frontend/package.json`, `frontend/package-lock.json`, `frontend/tsconfig.json` |
+
 ## How to Test
 
 ```bash

@@ -164,7 +164,7 @@ func TestVehicleService_GetByID(t *testing.T) {
 	vid := uuid.New()
 	validVehicle := &models.Vehicle{
 		ID: vid, Make: "Honda", Model: "Civic", Year: 2023,
-		StockedAt: time.Now().Add(-100 * 24 * time.Hour),
+		StockedAt:   time.Now().Add(-100 * 24 * time.Hour),
 		DaysInStock: 100, IsAging: true,
 	}
 
