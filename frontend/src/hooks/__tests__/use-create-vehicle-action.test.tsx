@@ -7,7 +7,7 @@ import { mockAction } from "@/test/mocks";
 
 const mockApiFetch = vi.fn();
 vi.mock("@/lib/api/client", () => ({
-  apiFetch: (...args: any[]) => mockApiFetch(...args),
+  apiFetch: (...args: [string, RequestInit?]) => mockApiFetch(...args),
 }));
 
 describe("useCreateVehicleAction", () => {

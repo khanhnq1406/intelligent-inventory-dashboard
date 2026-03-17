@@ -65,7 +65,7 @@ describe("AgingStockPage", () => {
       prefetch: vi.fn(),
       forward: vi.fn(),
       refresh: vi.fn(),
-    } as any);
+    } as ReturnType<typeof navigation.useRouter>);
 
     mockUseVehicles.mockReturnValue({ data: { items: mockAgingVehicles, total: 1, page: 1, page_size: 100, total_pages: 1 }, isLoading: false, error: null });
     render(<AgingStockPage />);

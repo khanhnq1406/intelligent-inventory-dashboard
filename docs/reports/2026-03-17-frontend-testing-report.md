@@ -128,3 +128,4 @@ npm run test:e2e:ui         # Run with Playwright UI mode
 | Date | Fix | Severity | Commit |
 |------|-----|----------|--------|
 | 2026-03-17 | Added unit/component tests and E2E tests to `ci-frontend.yml` GitHub Actions workflow | Minor | — |
+| 2026-03-17 | Fixed ESLint errors: replaced `any` with typed tuples/generics in 8 test files, removed unused imports in vehicle-filters test | Minor | — |

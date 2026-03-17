@@ -72,7 +72,7 @@ describe("InventoryPage", () => {
       prefetch: vi.fn(),
       forward: vi.fn(),
       refresh: vi.fn(),
-    } as any);
+    } as ReturnType<typeof navigation.useRouter>);
 
     mockUseVehicles.mockReturnValue({ data: mockPaginatedVehicles, isLoading: false, error: null });
     render(<InventoryPage />);
