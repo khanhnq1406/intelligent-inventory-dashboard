@@ -1,0 +1,556 @@
+openapi: "3.0.3"
+info:
+  title: Intelligent Inventory Dashboard API
+  description: RESTful API for dealership vehicle inventory management with aging stock identification and actionable insights.
+  version: "1.0.0"
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Health check
+      description: Returns server health status including database connectivity.
+      tags:
+        - health
+      responses:
+        "200":
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "503":
+          description: Server is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /api/v1/dealerships:
+    get:
+      operationId: listDealerships
+      summary: List all dealerships
+      description: Returns all dealerships in the system.
+      tags:
+        - dealerships
+      responses:
+        "200":
+          description: List of dealerships
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dealership"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/vehicles:
+    get:
+      operationId: listVehicles
+      summary: List vehicles with filters
+      description: Returns a paginated, filterable list of vehicles.
+      tags:
+        - vehicles
+      parameters:
+        - name: dealership_id
+          in: query
+          description: Filter by dealership ID
+          schema:
+            type: string
+            format: uuid
+        - name: make
+          in: query
+          description: Filter by vehicle make
+          schema:
+            type: string
+            maxLength: 100
+        - name: model
+          in: query
+          description: Filter by vehicle model
+          schema:
+            type: string
+            maxLength: 100
+        - name: status
+          in: query
+          description: Filter by vehicle status
+          schema:
+            type: string
+            enum:
+              - available
+              - sold
+              - reserved
+        - name: aging
+          in: query
+          description: If true, only return vehicles stocked for more than 90 days
+          schema:
+            type: boolean
+        - name: sort_by
+          in: query
+          description: Column to sort by
+          schema:
+            type: string
+            enum:
+              - stocked_at
+              - price
+              - year
+              - make
+            default: stocked_at
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: desc
+        - name: page
+          in: query
+          description: Page number (1-indexed)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Paginated list of vehicles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedVehicles"
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/vehicles/{id}:
+    get:
+      operationId: getVehicle
+      summary: Get vehicle details
+      description: Returns a single vehicle with its action history.
+      tags:
+        - vehicles
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Vehicle UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Vehicle details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+        "404":
+          description: Vehicle not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/vehicles/{id}/actions:
+    get:
+      operationId: listVehicleActions
+      summary: List actions for a vehicle
+      description: Returns all actions logged for a specific vehicle, ordered by creation date descending.
+      tags:
+        - vehicle-actions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Vehicle UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: List of vehicle actions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleAction"
+        "404":
+          description: Vehicle not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      operationId: createVehicleAction
+      summary: Log an action for a vehicle
+      description: Creates a new action entry for a vehicle. Actions are append-only and cannot be modified or deleted.
+      tags:
+        - vehicle-actions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Vehicle UUID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVehicleActionRequest"
+      responses:
+        "201":
+          description: Action created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleAction"
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Vehicle not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      summary: Get dashboard summary
+      description: Returns aggregated inventory statistics including aging stock counts.
+      tags:
+        - dashboard
+      responses:
+        "200":
+          description: Dashboard summary data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - version
+        - uptime
+        - database
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+            - unhealthy
+        version:
+          type: string
+          example: "1.0.0"
+        uptime:
+          type: string
+          example: "2h30m"
+        database:
+          type: string
+          enum:
+            - connected
+            - disconnected
+        timestamp:
+          type: string
+          format: date-time
+
+    Dealership:
+      type: object
+      required:
+        - id
+        - name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 255
+        location:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Vehicle:
+      type: object
+      required:
+        - id
+        - dealership_id
+        - make
+        - model
+        - year
+        - vin
+        - status
+        - stocked_at
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        dealership_id:
+          type: string
+          format: uuid
+        make:
+          type: string
+          maxLength: 100
+        model:
+          type: string
+          maxLength: 100
+        year:
+          type: integer
+          minimum: 1900
+          maximum: 2100
+        vin:
+          type: string
+          minLength: 17
+          maxLength: 17
+          pattern: "^[A-HJ-NPR-Z0-9]{17}$"
+        price:
+          type: number
+          format: double
+          minimum: 0
+        status:
+          type: string
+          enum:
+            - available
+            - sold
+            - reserved
+        stocked_at:
+          type: string
+          format: date-time
+        days_in_stock:
+          type: integer
+          description: Computed field — number of days since stocked_at
+        is_aging:
+          type: boolean
+          description: Computed field — true if days_in_stock > 90
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/VehicleAction"
+          description: Action history, included in vehicle detail response
+
+    VehicleAction:
+      type: object
+      required:
+        - id
+        - vehicle_id
+        - action_type
+        - created_by
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        vehicle_id:
+          type: string
+          format: uuid
+        action_type:
+          type: string
+          enum:
+            - price_reduction
+            - transfer
+            - auction
+            - marketing
+            - wholesale
+            - custom
+        notes:
+          type: string
+          maxLength: 2000
+        created_by:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+
+    CreateVehicleActionRequest:
+      type: object
+      required:
+        - action_type
+        - created_by
+      properties:
+        action_type:
+          type: string
+          enum:
+            - price_reduction
+            - transfer
+            - auction
+            - marketing
+            - wholesale
+            - custom
+        notes:
+          type: string
+          maxLength: 2000
+        created_by:
+          type: string
+          maxLength: 255
+
+    PaginatedVehicles:
+      type: object
+      required:
+        - items
+        - total
+        - page
+        - page_size
+        - total_pages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Vehicle"
+        total:
+          type: integer
+          description: Total number of matching vehicles
+        page:
+          type: integer
+          description: Current page number
+        page_size:
+          type: integer
+          description: Number of items per page
+        total_pages:
+          type: integer
+          description: Total number of pages
+
+    DashboardSummary:
+      type: object
+      required:
+        - total_vehicles
+        - aging_vehicles
+        - average_days_in_stock
+        - by_make
+        - by_status
+      properties:
+        total_vehicles:
+          type: integer
+        aging_vehicles:
+          type: integer
+        average_days_in_stock:
+          type: number
+          format: double
+        by_make:
+          type: array
+          items:
+            $ref: "#/components/schemas/MakeSummary"
+        by_status:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusSummary"
+
+    MakeSummary:
+      type: object
+      required:
+        - make
+        - count
+        - aging_count
+      properties:
+        make:
+          type: string
+        count:
+          type: integer
+        aging_count:
+          type: integer
+
+    StatusSummary:
+      type: object
+      required:
+        - status
+        - count
+      properties:
+        status:
+          type: string
+        count:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Human-readable error message
