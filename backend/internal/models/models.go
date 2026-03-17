@@ -67,11 +67,11 @@ type PaginatedVehicles struct {
 }
 
 type DashboardSummary struct {
-	TotalVehicles    int             `json:"total_vehicles"`
-	AgingVehicles    int             `json:"aging_vehicles"`
-	AvgDaysInStock   float64         `json:"average_days_in_stock"`
-	ByMake           []MakeSummary   `json:"by_make"`
-	ByStatus         []StatusSummary `json:"by_status"`
+	TotalVehicles  int             `json:"total_vehicles"`
+	AgingVehicles  int             `json:"aging_vehicles"`
+	AvgDaysInStock float64         `json:"average_days_in_stock"`
+	ByMake         []MakeSummary   `json:"by_make"`
+	ByStatus       []StatusSummary `json:"by_status"`
 }
 
 type MakeSummary struct {

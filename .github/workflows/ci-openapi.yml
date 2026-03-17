@@ -1,0 +1,46 @@
+name: CI OpenAPI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "api/**"
+      - "backend/internal/handler/oapi-codegen.cfg.yaml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "api/**"
+      - "backend/internal/handler/oapi-codegen.cfg.yaml"
+
+jobs:
+  validate-codegen:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          cache-dependency-path: backend/go.sum
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: Regenerate types from OpenAPI spec
+        run: make generate
+
+      - name: Check for uncommitted changes
+        run: |
+          if ! git diff --exit-code; then
+            echo "Generated files are out of date. Run 'make generate' and commit the changes."
+            exit 1
+          fi
