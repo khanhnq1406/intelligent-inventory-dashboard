@@ -48,12 +48,15 @@ Task tool (general-purpose):
 
     ### 3. Injection Prevention
     - [ ] SQL: All queries use pgx parameterized queries (no string concatenation in SQL)
-    - [ ] XSS: User-generated content escaped before rendering
+    - [ ] XSS: User-generated content escaped before rendering (verify `react-best-practices` server component patterns — `"use client"` only where needed)
     - [ ] Command injection: No shell commands with user input
     - [ ] Path traversal: No file paths constructed from user input
 
     ### 4. Data Exposure
     - [ ] Error messages don't leak internal details (stack traces, DB errors, file paths)
+    - [ ] Go errors wrapped with `%w` but sanitized before HTTP response — internal error chains not exposed to client (`golang-pro` skill)
+    - [ ] No `panic` used for error handling — panics in HTTP handlers crash the process (`golang-pro` skill)
+    - [ ] Context propagation ensures request cancellation propagates correctly (`golang-pro` skill)
     - [ ] API responses don't include sensitive fields (passwords, tokens, internal IDs)
     - [ ] Logs don't contain sensitive data
     - [ ] No hardcoded secrets or credentials in code

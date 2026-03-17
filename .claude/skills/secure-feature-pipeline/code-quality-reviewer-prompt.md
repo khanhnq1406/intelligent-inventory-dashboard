@@ -43,20 +43,32 @@ Task tool (general-purpose):
     - [ ] No unnecessary re-renders (proper memoization if needed)
     - [ ] Proper error/loading state handling
 
-    ### Frontend Best Practices
+    ### Frontend Best Practices — `react-best-practices` skill compliance
+    - [ ] **P1 No waterfalls**: Independent fetches use `Promise.all()`, not sequential await; awaits deferred into branches
+    - [ ] **P2 Bundle size**: Direct imports (no barrel files); `next/dynamic` for heavy components (charts, modals); third-party scripts deferred after hydration
+    - [ ] **P3 Server perf**: `React.cache()` for deduplication; minimal data serialized to client; `after()` for non-blocking ops
+    - [ ] **P5 Re-renders**: `React.memo()` where needed; primitive deps in effects; derived state; functional setState; `startTransition` for non-urgent updates
     - [ ] **Images**: Uses `next/image` — NOT plain `<img>`
     - [ ] **Component reuse**: shadcn/ui primitives in `components/ui/`, composed into feature components in `components/`
     - [ ] **Responsive**: Mobile-first styles, standard Tailwind breakpoints, 2-3 breakpoints max per property
     - [ ] **Touch targets**: >= 44x44px on mobile, `cursor-pointer` on interactive elements
-    - [ ] **No async waterfalls**: Independent fetches use `Promise.all()`, not sequential await
-    - [ ] **Dynamic imports**: Heavy components (charts, large modals) use `next/dynamic`
+    - [ ] **Server components**: `"use client"` only where needed — keep server components where possible
     - [ ] **Contrast**: Text contrast >= 4.5:1, hover/focus states visible
 
-    ### Go Quality (Backend)
+    ### Go Quality (Backend) — `golang-pro` skill compliance
     - [ ] Error handling first (early returns)
-    - [ ] Context propagation
+    - [ ] Errors wrapped with `fmt.Errorf("context: %w", err)` — proper error chains
+    - [ ] Context propagation (`context.Context` as first param on blocking ops)
     - [ ] Proper use of pgx (parameterized queries, no string concatenation in SQL)
     - [ ] Resource cleanup (defer for close operations)
+    - [ ] No `panic` for error handling — explicit error returns only
+    - [ ] No ignored errors (`_` assignment without justification)
+    - [ ] Interfaces defined before implementations (small, focused, composed)
+    - [ ] `go vet ./...` passes
+    - [ ] `golangci-lint run` passes
+    - [ ] All exported functions, types, and packages documented
+    - [ ] Table-driven tests with subtests (`t.Run`)
+    - [ ] Tests run with `-race` flag
 
     ### Testing
     - [ ] Tests actually verify behavior (not just coverage)

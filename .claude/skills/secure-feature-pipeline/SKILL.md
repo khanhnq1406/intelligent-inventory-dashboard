@@ -384,6 +384,45 @@ Save to: `docs/plans/YYYY-MM-DD-<feature>-plan.md`
 **Step N: Commit**
 ```
 
+### Backend Task Template (For Go Tasks)
+
+For tasks involving backend/Go work, include these additional steps:
+
+```markdown
+### Task N: [Backend Handler/Service/Repository Name]
+
+**Files:**
+- Create: `exact/path/to/file`
+- Modify: `exact/path/to/existing`
+- Test: `exact/path/to/test`
+
+**Security notes:** [Task-specific security concerns]
+
+**Step 0: Interface design**
+- Define interfaces before implementation (contracts first)
+- Use small, focused interfaces with composition
+- Follow existing patterns in `backend/internal/`
+
+**Step 1: Write the failing test**
+[Table-driven test with subtests]
+
+**Step 2: Run test to verify it fails (with -race)**
+`cd backend && go test -v -race ./internal/path/to/package/...`
+
+**Step 3: Write minimal implementation**
+[Idiomatic Go: proper error wrapping with %w, context propagation, early returns]
+
+**Step 4: Run test + lint to verify**
+`cd backend && go test -v -race ./internal/path/to/package/... && go vet ./... && golangci-lint run`
+
+**Step 5: [Additional steps — validation, auth checks, etc.]**
+
+**Step N: Commit**
+```
+
+**Required sub-skill for backend tasks:**
+- `golang-pro` — Idiomatic Go patterns, concurrency, interfaces, error handling, `go vet`, `golangci-lint`, table-driven tests with `-race`, context propagation, no panic for error handling
+
 ### Frontend Task Template (For UI Tasks)
 
 For tasks involving frontend/UI work, include these additional steps:
@@ -418,10 +457,10 @@ Search existing components before creating new ones:
 **Step N: Commit**
 ```
 
-**Required sub-skills for frontend tasks:**
+**Required sub-skill for frontend tasks:**
+- `react-best-practices` — Performance (eliminate waterfalls, direct imports, dynamic imports, server components, re-render optimization)
 - `ui-ux-pro-max` — Design system, accessibility, component patterns
 - `responsive-design` — Mobile-first Tailwind breakpoints
-- `react-best-practices` — Performance (waterfalls, bundle size, re-renders)
 
 ### Task Granularity (TDD Enforced)
 
@@ -437,9 +476,10 @@ Each step is one action (2-5 minutes):
 7. "Commit" — step
 
 **Test requirements per layer:**
-- **Backend service:** Unit test for business logic, edge cases, error paths
-- **Backend handler:** Integration test for HTTP request/response, auth, validation
-- **Frontend component:** Component test for rendering, user interaction, error states
+- **Backend service:** Table-driven unit tests with subtests for business logic, edge cases, error paths. Run with `-race` flag. (`golang-pro` skill)
+- **Backend handler:** Integration test for HTTP request/response, auth, validation. Run with `-race` flag. (`golang-pro` skill)
+- **Backend lint:** `go vet ./...` and `golangci-lint run` must pass before committing. (`golang-pro` skill)
+- **Frontend component:** Component test for rendering, user interaction, error states. Follow `react-best-practices` for performance patterns.
 - **OpenAPI changes:** Verify generated code compiles (`make generate && cd backend && go build ./...`)
 
 **Red flags:**
@@ -912,6 +952,11 @@ Use when ANY of these are true:
 - Storing aging stock status as a field instead of computing it
 - Implementing multi-step business logic without creating/updating runtime flow diagrams
 - Creating new components without checking if shadcn/ui already has a suitable one
+- Writing Go code without running `go vet ./...` and `golangci-lint run` before committing
+- Writing Go code without following `golang-pro` skill (interfaces first, context propagation, error wrapping with `%w`, table-driven tests with `-race`)
+- Using `panic` for error handling in Go code (use explicit error returns)
+- Writing frontend code without following `react-best-practices` skill (waterfalls, barrel imports, missing dynamic imports)
+- Skipping `-race` flag on Go tests
 - Manually editing generated files (`api.gen.go`, `types.ts`) instead of updating `api/openapi.yaml`
 - Using the full fix pipeline for a one-line typo fix (use minor fix path)
 - Proceeding to the next task without committing the current task and updating the progress file
@@ -936,7 +981,8 @@ Use when ANY of these are true:
 - subagent-driven-development patterns (from subagent-driven-development skill)
 
 **Required sub-skills by context:**
-- **Any UI/frontend work** → `ui-ux-pro-max` skill (design system, color, typography, accessibility, component patterns) + `responsive-design` skill (mobile-first Tailwind breakpoints) + `react-best-practices` skill (performance: waterfalls, bundle size, re-renders, next/image)
+- **Any backend/Go work** → `golang-pro` skill (idiomatic Go: interfaces, context propagation, error wrapping with `%w`, `go vet`, `golangci-lint`, table-driven tests with `-race`, concurrency patterns, no panic for error handling)
+- **Any UI/frontend work** → `react-best-practices` skill (performance: eliminate waterfalls, direct imports, dynamic imports, re-render optimization, server components) + `ui-ux-pro-max` skill (design system, color, typography, accessibility, component patterns) + `responsive-design` skill (mobile-first Tailwind breakpoints)
 - **C4 or architecture diagrams** → `c4-architecture` skill (Mermaid C4 syntax, element types, best practices)
 
 **Subagents should follow:**
@@ -944,4 +990,6 @@ Use when ANY of these are true:
 - OpenAPI-first API design (`api/openapi.yaml` → `make generate`)
 - Layered architecture (handler → service → repository with pgx)
 - Data integrity rules (aging stock computed, vehicle_actions append-only)
+- **`golang-pro` skill** for all backend/Go work (idiomatic Go, `go vet`, `golangci-lint`, context propagation, error wrapping, table-driven tests with `-race`)
+- **`react-best-practices` skill** for all frontend work (eliminate waterfalls, direct imports, dynamic imports, server components, re-render optimization)
 - **Mobile-first design** for all frontend work (standard Tailwind breakpoints)

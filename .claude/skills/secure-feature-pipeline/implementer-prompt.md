@@ -31,24 +31,58 @@ Task tool (general-purpose):
     - **Services:** In `backend/internal/service/`
     - **Repositories:** In `backend/internal/repository/`
 
+    ## Backend/Go Tasks — Required Sub-Skills
+
+    If this task involves any backend or Go work, you MUST follow the `golang-pro` skill. Key requirements:
+
+    1. **Interface design first** — Define small, focused interfaces with composition before implementation
+    2. **Idiomatic Go patterns:**
+       - Error wrapping with `fmt.Errorf("context: %w", err)` — never bare returns
+       - Context propagation (`context.Context` as first parameter on all blocking operations)
+       - Early returns for error handling
+       - No `panic` for error handling — use explicit error returns
+       - No `_` error assignment without justification
+    3. **Lint & validate (MANDATORY before reporting back):**
+       - `go vet ./...` — must pass
+       - `golangci-lint run` — must pass, fix all reported issues
+    4. **Testing:**
+       - Table-driven tests with subtests (`t.Run`)
+       - Always run with `-race` flag: `go test -v -race ./...`
+       - Document all exported functions, types, and packages
+    5. **Concurrency (if applicable):**
+       - Bounded goroutine lifetime via context
+       - Error propagation through channels
+       - No goroutine leaks on cancellation
+
+    **Non-negotiable backend checklist before reporting back:**
+    - [ ] `go vet ./...` passes
+    - [ ] `golangci-lint run` passes
+    - [ ] All tests pass with `-race` flag
+    - [ ] Errors wrapped with `%w` for proper error chains
+    - [ ] Context propagated through all layers
+    - [ ] No `panic` used for error handling
+    - [ ] Interfaces defined before implementations
+
     ## Frontend/UI Tasks — Required Sub-Skills
 
     If this task involves any frontend or UI work, you MUST follow these skills FIRST before writing any code:
 
-    1. **`ui-ux-pro-max` skill** — Design system, color palette, typography, accessibility rules, component patterns.
+    1. **`react-best-practices` skill** (CRITICAL — performance) — Follow ALL rules by priority:
+       - **P1 Eliminate waterfalls:** `Promise.all()` for independent fetches, defer awaits, Suspense boundaries
+       - **P2 Bundle size:** Import directly (no barrel files), `next/dynamic` for heavy components (charts, modals), defer third-party scripts
+       - **P3 Server-side:** `React.cache()` for deduplication, minimize data to client, `after()` for non-blocking ops
+       - **P4 Client data:** Use SWR/TanStack Query for deduplication
+       - **P5 Re-renders:** `React.memo()`, primitive deps, derived state, functional setState, `startTransition`
+       - `"use client"` only where needed — keep server components where possible
 
-    2. **`responsive-design` skill** — Mobile-first layout with Tailwind CSS.
+    2. **`ui-ux-pro-max` skill** — Design system, color palette, typography, accessibility rules, component patterns.
+
+    3. **`responsive-design` skill** — Mobile-first layout with Tailwind CSS.
        - Always start with mobile (unprefixed) styles, enhance at breakpoints
        - Standard Tailwind breakpoints (sm: 640px, md: 768px, lg: 1024px, xl: 1280px)
        - Use 2-3 breakpoints per property max
        - Touch targets must be >= 44x44px
        - No horizontal scroll on mobile
-
-    3. **`react-best-practices` skill** — Performance optimization from Vercel Engineering.
-       - Eliminate async waterfalls — use `Promise.all()` for independent fetches
-       - Dynamic imports for heavy components — `next/dynamic` for charts, modals with heavy deps
-       - Minimize re-renders — use `React.memo()`, primitive deps, derived state
-       - `"use client"` only where needed — keep server components where possible
 
     ### Component Reuse (MANDATORY — Check Before Creating)
 
