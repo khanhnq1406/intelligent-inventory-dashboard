@@ -1,6 +1,10 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { VehicleFilters } from "@/components/vehicle-filters";
+import { useMakes } from "@/hooks/use-makes";
+
+vi.mock("@/hooks/use-makes", () => ({ useMakes: vi.fn() }));
+const mockUseMakes = useMakes as ReturnType<typeof vi.fn>;
 
 const defaultFilters = {
   search: "",
@@ -11,6 +15,13 @@ const defaultFilters = {
 };
 
 describe("VehicleFilters", () => {
+  beforeEach(() => {
+    mockUseMakes.mockReturnValue({
+      makes: ["Toyota", "Honda", "BMW"],
+      isLoading: false,
+    });
+  });
+
   it("renders search input with placeholder", () => {
     render(<VehicleFilters filters={defaultFilters} onFiltersChange={vi.fn()} />);
     expect(screen.getByPlaceholderText("Search by VIN, make, model...")).toBeInTheDocument();
@@ -83,5 +94,48 @@ describe("VehicleFilters", () => {
   it("shows total count when totalCount is provided", () => {
     render(<VehicleFilters filters={defaultFilters} onFiltersChange={vi.fn()} totalCount={42} />);
     expect(screen.getByText("Showing 42 vehicles")).toBeInTheDocument();
+  });
+});
+
+describe("VehicleFilters — dynamic makes", () => {
+  it("shows 'All Makes' and dynamic makes from hook", () => {
+    mockUseMakes.mockReturnValue({
+      makes: ["BMW", "Honda", "Toyota"],
+      isLoading: false,
+    });
+    render(
+      <VehicleFilters
+        filters={defaultFilters}
+        onFiltersChange={vi.fn()}
+      />
+    );
+    expect(screen.getByRole("option", { name: "All Makes" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "BMW" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Honda" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Toyota" })).toBeInTheDocument();
+    // Hardcoded makes should NOT exist
+    expect(screen.queryByRole("option", { name: "Chevrolet" })).not.toBeInTheDocument();
+  });
+
+  it("disables make dropdown while loading", () => {
+    mockUseMakes.mockReturnValue({ makes: [], isLoading: true });
+    render(
+      <VehicleFilters
+        filters={defaultFilters}
+        onFiltersChange={vi.fn()}
+      />
+    );
+    expect(screen.getByRole("option", { name: "All Makes" })).toBeInTheDocument();
+  });
+
+  it("shows only 'All Makes' when inventory has no makes", () => {
+    mockUseMakes.mockReturnValue({ makes: [], isLoading: false });
+    render(
+      <VehicleFilters
+        filters={defaultFilters}
+        onFiltersChange={vi.fn()}
+      />
+    );
+    expect(screen.getByRole("option", { name: "All Makes" })).toBeInTheDocument();
   });
 });

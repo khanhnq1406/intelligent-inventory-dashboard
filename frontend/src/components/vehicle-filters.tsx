@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Search, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useMakes } from "@/hooks/use-makes";
 
 interface VehicleFiltersProps {
   filters: {
@@ -17,11 +18,11 @@ interface VehicleFiltersProps {
   totalCount?: number;
 }
 
-const makes = ["All Makes", "Toyota", "Honda", "BMW", "Mercedes-Benz", "Audi", "Ford", "Chevrolet"];
 const statuses = ["All Statuses", "available", "sold", "reserved"];
 
 export function VehicleFilters({ filters, onFiltersChange, totalCount }: VehicleFiltersProps) {
   const [searchInput, setSearchInput] = useState(filters.search);
+  const { makes, isLoading: makesLoading } = useMakes();
 
   // Debounce search input
   useEffect(() => {
@@ -55,10 +56,13 @@ export function VehicleFilters({ filters, onFiltersChange, totalCount }: Vehicle
       <select
         value={filters.make}
         onChange={(e) => updateFilter("make", e.target.value)}
-        className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50"
+        aria-label="Filter by make"
+        disabled={makesLoading}
+        className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50"
       >
+        <option value="">All Makes</option>
         {makes.map((m) => (
-          <option key={m} value={m === "All Makes" ? "" : m}>{m}</option>
+          <option key={m} value={m}>{m}</option>
         ))}
       </select>
 
