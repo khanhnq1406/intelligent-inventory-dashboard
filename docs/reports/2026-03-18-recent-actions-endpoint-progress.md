@@ -7,7 +7,7 @@
 - **Started:** 2026-03-18T00:00:00Z
 - **Last updated:** 2026-03-18T00:00:00Z
 - **Current state:** in_progress
-- **Current task:** 5
+- **Current task:** 6
 
 ## Task Progress
 
@@ -18,7 +18,7 @@
 | 2 | Model — add RecentAction + RecentActionsFilter | done | 428fb58 | Added RecentAction and RecentActionsFilter structs |
 | 3 | Repository — add ListRecent | done | 20aafec | Added ListRecent to interface and impl with JOIN vehicles query |
 | 4 | Service — add ListRecent with validation | done | 32c1459 | Added ListRecent with limit [1,50] validation, 7 table-driven tests pass |
-| 5 | Handler — implement ListRecentActions | pending | — | — |
+| 5 | Handler — implement ListRecentActions | done | 86596ed | Implemented ListRecentActions with 5 handler tests, all passing |
 | 6 | Frontend hook — useRecentActions | pending | — | — |
 | 7 | Dashboard — replace workaround with useRecentActions | pending | — | — |
 
