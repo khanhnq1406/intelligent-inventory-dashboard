@@ -60,6 +60,7 @@ export const mockDashboardSummary: DashboardSummary = {
   total_vehicles: 150,
   aging_vehicles: 12,
   average_days_in_stock: 45,
+  actions_this_month: 8,
   by_make: [
     { make: "Toyota", count: 50, aging_count: 5 },
     { make: "Honda", count: 30, aging_count: 3 },

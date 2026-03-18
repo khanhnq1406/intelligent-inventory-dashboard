@@ -10,6 +10,14 @@ vi.mock("@/hooks/use-vehicles", () => ({
   useVehicles: () => mockUseVehicles(),
 }));
 
+vi.mock("@/hooks/use-create-vehicle", () => ({
+  useCreateVehicle: () => ({ mutate: vi.fn(), isPending: false, error: null, reset: vi.fn() }),
+}));
+
+vi.mock("@/hooks/use-dealerships", () => ({
+  useDealerships: () => ({ data: [] }),
+}));
+
 describe("InventoryPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
