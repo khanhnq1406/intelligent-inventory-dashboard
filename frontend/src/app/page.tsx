@@ -1,7 +1,7 @@
 "use client";
 
 import { useDashboardSummary } from "@/hooks/use-dashboard-summary";
-import { useVehicles } from "@/hooks/use-vehicles";
+import { useRecentActions } from "@/hooks/use-recent-actions";
 import { StatsCard } from "@/components/stats-card";
 import { ActionBadge } from "@/components/action-badge";
 import dynamic from "next/dynamic";
@@ -41,21 +41,7 @@ function StatsSkeleton() {
 
 export default function DashboardPage() {
   const { data: summary, isLoading: summaryLoading, error: summaryError } = useDashboardSummary();
-  const { data: vehiclesData } = useVehicles({ page_size: 20, order: "desc", sort_by: "stocked_at" });
-
-  // Derive recent actions from vehicles that have actions
-  const recentActions = vehiclesData?.items
-    ?.flatMap((v) =>
-      (v.actions ?? []).map((a) => ({
-        vehicle: `${v.year} ${v.make} ${v.model}`,
-        vehicleId: v.id,
-        actionType: a.action_type,
-        daysInStock: v.days_in_stock ?? 0,
-        date: a.created_at,
-      }))
-    )
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 3);
+  const { data: recentActionsData } = useRecentActions({ limit: 3 });
 
   if (summaryError) {
     return (
@@ -131,14 +117,14 @@ export default function DashboardPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {recentActions && recentActions.length > 0 ? (
-              recentActions.map((action, i) => (
-                <TableRow key={i}>
-                  <TableCell className="text-sm text-zinc-900 dark:text-zinc-50">{action.vehicle}</TableCell>
-                  <TableCell><ActionBadge actionType={action.actionType} /></TableCell>
-                  <TableCell className="text-sm text-zinc-600 dark:text-zinc-400">{action.daysInStock}</TableCell>
+            {recentActionsData && recentActionsData.length > 0 ? (
+              recentActionsData.map((a) => (
+                <TableRow key={a.id}>
+                  <TableCell className="text-sm text-zinc-900 dark:text-zinc-50">{`${a.vehicle_year} ${a.vehicle_make} ${a.vehicle_model}`}</TableCell>
+                  <TableCell><ActionBadge actionType={a.action_type} /></TableCell>
+                  <TableCell className="text-sm text-zinc-600 dark:text-zinc-400">{a.days_in_stock}</TableCell>
                   <TableCell className="text-sm text-zinc-500 dark:text-zinc-400">
-                    {new Date(action.date).toLocaleDateString()}
+                    {new Date(a.created_at).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
               ))
@@ -161,19 +147,19 @@ export default function DashboardPage() {
             View all →
           </Link>
         </div>
-        {recentActions && recentActions.length > 0 ? (
-          recentActions.map((action, i) => (
+        {recentActionsData && recentActionsData.length > 0 ? (
+          recentActionsData.map((a) => (
             <div
-              key={i}
+              key={a.id}
               className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4"
             >
               <div className="flex items-start justify-between gap-2">
-                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{action.vehicle}</p>
-                <ActionBadge actionType={action.actionType} />
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{`${a.vehicle_year} ${a.vehicle_make} ${a.vehicle_model}`}</p>
+                <ActionBadge actionType={a.action_type} />
               </div>
               <div className="mt-2 flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400">
-                <span>{action.daysInStock} days in stock</span>
-                <span>{new Date(action.date).toLocaleDateString()}</span>
+                <span>{a.days_in_stock} days in stock</span>
+                <span>{new Date(a.created_at).toLocaleDateString()}</span>
               </div>
             </div>
           ))
