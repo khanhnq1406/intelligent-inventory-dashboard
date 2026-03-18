@@ -4,9 +4,10 @@ test.describe("Vehicle Detail", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to first vehicle from inventory
     await page.goto("/inventory");
-    await expect(page.locator("table tbody tr").first()).toBeVisible();
+    // Wait for actual data rows (font-mono VIN cells), not loading skeletons
+    await expect(page.locator("table tbody tr td.font-mono").first()).toBeVisible({ timeout: 15000 });
     await page.locator("table tbody tr").first().click();
-    await expect(page).toHaveURL(/\/vehicles\/.+/);
+    await expect(page).toHaveURL(/\/vehicles\/.+/, { timeout: 10000 });
   });
 
   test("info card shows vehicle data", async ({ page }) => {

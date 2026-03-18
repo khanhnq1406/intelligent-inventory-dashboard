@@ -18,9 +18,9 @@ test.describe("Inventory", () => {
 
   test("click row navigates to vehicle detail", async ({ page }) => {
     await page.goto("/inventory");
-    // Wait for table to load
-    await expect(page.locator("table tbody tr").first()).toBeVisible();
+    // Wait for table to load with actual data (not loading skeletons)
+    await expect(page.locator("table tbody tr td.font-mono").first()).toBeVisible({ timeout: 15000 });
     await page.locator("table tbody tr").first().click();
-    await expect(page).toHaveURL(/\/vehicles\/.+/);
+    await expect(page).toHaveURL(/\/vehicles\/.+/, { timeout: 10000 });
   });
 });

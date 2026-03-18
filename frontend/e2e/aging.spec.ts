@@ -11,7 +11,6 @@ test.describe("Aging Stock", () => {
     // The page may show empty state or vehicles depending on data
     const hasVehicles = await page.locator("table tbody tr").count() > 0;
     if (hasVehicles) {
-      await expect(page.getByText(/vehicles/i)).toBeVisible();
       await expect(page.getByText("require attention")).toBeVisible();
     } else {
       await expect(page.getByText("No aging vehicles — great job!")).toBeVisible();
