@@ -131,7 +131,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
             <Label htmlFor="dealership_id">Dealership *</Label>
             <Select
               value={form.dealership_id}
-              onValueChange={(v) => handleChange("dealership_id", v)}
+              onValueChange={(v) => handleChange("dealership_id", v ?? "")}
             >
               <SelectTrigger id="dealership_id">
                 <SelectValue placeholder="Select dealership" />
@@ -232,7 +232,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
               <Label htmlFor="status">Status *</Label>
               <Select
                 value={form.status}
-                onValueChange={(v) => handleChange("status", v)}
+                onValueChange={(v) => handleChange("status", v ?? "")}
               >
                 <SelectTrigger id="status">
                   <SelectValue />

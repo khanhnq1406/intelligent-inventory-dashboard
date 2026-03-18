@@ -76,6 +76,13 @@ All identified security concerns addressed: VIN regex, SQL injection protection,
 - Frontend hooks follow TanStack Query patterns with proper cache invalidation
 - `@base-ui/react/dialog` Portal mocked at UI component level (not base-ui level) in tests
 
+## Fix History
+
+| Date | Fix | Severity | Commit |
+|------|-----|----------|--------|
+| 2026-03-18 | TypeScript: `onValueChange` handlers in `add-vehicle-modal.tsx` (lines 134, 235) used `v` typed `string \| null`; fixed with `v ?? ""` nullish coalescing | Minor | — |
+| 2026-03-18 | Go: `vehicle_create_export_test.go` was not `gofmt`-formatted; ran `gofmt -w` | Minor | — |
+
 ## Known Issues / Technical Debt
 
 - `golangci-lint` reports 4 pre-existing issues in `config_test.go` and `service/health.go` (not introduced by this feature)

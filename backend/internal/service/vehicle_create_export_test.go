@@ -40,9 +40,9 @@ func TestVehicleService_Create_Validation(t *testing.T) {
 	validDealership := &models.Dealership{ID: uuid.New(), Name: "Test Dealer"}
 
 	tests := []struct {
-		name      string
-		input     models.CreateVehicleInput
-		wantErr   string
+		name    string
+		input   models.CreateVehicleInput
+		wantErr string
 	}{
 		{
 			name:    "valid input succeeds",
@@ -100,8 +100,12 @@ func TestVehicleService_Create_Validation(t *testing.T) {
 			wantErr: "status must be available, sold, or reserved",
 		},
 		{
-			name:    "future stocked_at rejected",
-			input:   func() models.CreateVehicleInput { i := validCreateInput(); i.StockedAt = time.Now().Add(24 * time.Hour); return i }(),
+			name: "future stocked_at rejected",
+			input: func() models.CreateVehicleInput {
+				i := validCreateInput()
+				i.StockedAt = time.Now().Add(24 * time.Hour)
+				return i
+			}(),
 			wantErr: "stocked date cannot be in the future",
 		},
 	}
