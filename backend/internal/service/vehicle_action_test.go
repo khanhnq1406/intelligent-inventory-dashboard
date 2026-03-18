@@ -12,10 +12,13 @@ import (
 )
 
 type mockVehicleActionRepo struct {
-	action    *models.VehicleAction
-	actions   []models.VehicleAction
-	createErr error
-	listErr   error
+	action          *models.VehicleAction
+	actions         []models.VehicleAction
+	recentActions   []models.RecentAction
+	createErr       error
+	listErr         error
+	listRecentErr   error
+	listRecentLimit int // captures the limit passed to ListRecent
 }
 
 func (m *mockVehicleActionRepo) Create(_ context.Context, _ models.VehicleAction) (*models.VehicleAction, error) {
@@ -27,6 +30,11 @@ func (m *mockVehicleActionRepo) Create(_ context.Context, _ models.VehicleAction
 
 func (m *mockVehicleActionRepo) ListByVehicleID(_ context.Context, _ uuid.UUID) ([]models.VehicleAction, error) {
 	return m.actions, m.listErr
+}
+
+func (m *mockVehicleActionRepo) ListRecent(_ context.Context, filter models.RecentActionsFilter) ([]models.RecentAction, error) {
+	m.listRecentLimit = filter.Limit
+	return m.recentActions, m.listRecentErr
 }
 
 // mockVehicleRepoForAction implements VehicleRepository for action service tests
