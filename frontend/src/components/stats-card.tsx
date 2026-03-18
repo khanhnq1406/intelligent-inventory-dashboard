@@ -10,7 +10,11 @@ interface StatsCardProps {
 
 export function StatsCard({ title, value, description, change, valueClassName }: StatsCardProps) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
+    <div
+      role="status"
+      aria-label={`${title}: ${value}`}
+      className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900"
+    >
       <p className="text-xs text-zinc-500 dark:text-zinc-400">{title}</p>
       <p className={cn("mt-1 text-3xl font-bold text-zinc-900 dark:text-zinc-50", valueClassName)}>{value}</p>
       {change && (

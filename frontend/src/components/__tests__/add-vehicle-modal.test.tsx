@@ -30,10 +30,20 @@ vi.mock("@/hooks/use-dealerships", () => ({
 vi.mock("@/components/ui/dialog", () => ({
   Dialog: ({ open, children }: { open: boolean; onOpenChange?: unknown; children: React.ReactNode }) =>
     open ? <div data-testid="dialog-root">{children}</div> : null,
-  DialogContent: ({ children }: { children: React.ReactNode }) => <div data-testid="dialog-content">{children}</div>,
+  DialogContent: ({ children, className }: { children: React.ReactNode; className?: string }) => (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dialog-title"
+      data-testid="dialog-content"
+      className={className}
+    >
+      {children}
+    </div>
+  ),
   DialogHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DialogTitle: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <h2 className={className}>{children}</h2>
+    <h2 id="dialog-title" className={className}>{children}</h2>
   ),
   DialogFooter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
@@ -144,5 +154,23 @@ describe("AddVehicleModal", () => {
 
     expect(screen.getByRole("button", { name: /Cancel/i })).toBeDisabled();
     expect(screen.getByRole("button", { name: /Adding.../i })).toBeDisabled();
+  });
+});
+
+describe("AddVehicleModal accessibility", () => {
+  it("has role=dialog and aria-modal=true", async () => {
+    render(<AddVehicleModal open={true} onOpenChange={vi.fn()} />);
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+  });
+
+  it("dialog is labelled by its title", async () => {
+    render(<AddVehicleModal open={true} onOpenChange={vi.fn()} />);
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveAttribute("aria-labelledby", "dialog-title");
+    // Verify the labelling element contains the title text
+    const titleEl = document.getElementById("dialog-title");
+    expect(titleEl).toBeInTheDocument();
+    expect(titleEl?.textContent).toMatch(/add new vehicle/i);
   });
 });

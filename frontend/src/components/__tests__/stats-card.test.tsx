@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { StatsCard } from "@/components/stats-card";
 
+
 describe("StatsCard", () => {
   it("renders title and value", () => {
     render(<StatsCard title="Total Vehicles" value={150} />);
@@ -40,5 +41,13 @@ describe("StatsCard", () => {
   it("renders string value", () => {
     render(<StatsCard title="Avg Days" value="45.3" />);
     expect(screen.getByText("45.3")).toBeInTheDocument();
+  });
+});
+
+describe("StatsCard accessibility", () => {
+  it("has role=status and dynamic aria-label", () => {
+    render(<StatsCard title="Total Vehicles" value={150} />);
+    const card = screen.getByRole("status");
+    expect(card).toHaveAttribute("aria-label", "Total Vehicles: 150");
   });
 });
