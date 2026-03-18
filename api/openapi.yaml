@@ -150,6 +150,118 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+    post:
+      operationId: createVehicle
+      summary: Create a new vehicle
+      description: Adds a new vehicle to the inventory.
+      tags:
+        - vehicles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVehicleRequest"
+      responses:
+        "201":
+          description: Vehicle created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+        "400":
+          description: Invalid request body or validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: A vehicle with this VIN already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/vehicles/export:
+    get:
+      operationId: exportVehicles
+      summary: Export filtered vehicles as CSV
+      description: Exports all vehicles matching the given filters as a CSV file. No pagination — exports all matching records (max 10,000).
+      tags:
+        - vehicles
+      parameters:
+        - name: dealership_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: make
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: model
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - available
+              - sold
+              - reserved
+        - name: aging
+          in: query
+          schema:
+            type: boolean
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum:
+              - stocked_at
+              - price
+              - year
+              - make
+            default: stocked_at
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: desc
+      responses:
+        "200":
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Invalid query parameters or export limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /api/v1/vehicles/{id}:
     get:
       operationId: getVehicle
@@ -498,6 +610,7 @@ components:
         - total_vehicles
         - aging_vehicles
         - average_days_in_stock
+        - actions_this_month
         - by_make
         - by_status
       properties:
@@ -508,6 +621,9 @@ components:
         average_days_in_stock:
           type: number
           format: double
+        actions_this_month:
+          type: integer
+          description: Number of vehicle actions created in the last 30 days
         by_make:
           type: array
           items:
@@ -541,6 +657,51 @@ components:
           type: string
         count:
           type: integer
+
+    CreateVehicleRequest:
+      type: object
+      required:
+        - dealership_id
+        - make
+        - model
+        - year
+        - vin
+        - status
+      properties:
+        dealership_id:
+          type: string
+          format: uuid
+        make:
+          type: string
+          minLength: 1
+          maxLength: 100
+        model:
+          type: string
+          minLength: 1
+          maxLength: 100
+        year:
+          type: integer
+          minimum: 1900
+          maximum: 2100
+        vin:
+          type: string
+          minLength: 17
+          maxLength: 17
+          pattern: "^[A-HJ-NPR-Z0-9]{17}$"
+        price:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 10000000
+        status:
+          type: string
+          enum:
+            - available
+            - sold
+            - reserved
+        stocked_at:
+          type: string
+          format: date-time
 
     ErrorResponse:
       type: object

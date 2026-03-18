@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -40,6 +41,27 @@ func (e CreateVehicleActionRequestActionType) Valid() bool {
 	case CreateVehicleActionRequestActionTypeTransfer:
 		return true
 	case CreateVehicleActionRequestActionTypeWholesale:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateVehicleRequestStatus.
+const (
+	CreateVehicleRequestStatusAvailable CreateVehicleRequestStatus = "available"
+	CreateVehicleRequestStatusReserved  CreateVehicleRequestStatus = "reserved"
+	CreateVehicleRequestStatusSold      CreateVehicleRequestStatus = "sold"
+)
+
+// Valid indicates whether the value is a known member of the CreateVehicleRequestStatus enum.
+func (e CreateVehicleRequestStatus) Valid() bool {
+	switch e {
+	case CreateVehicleRequestStatusAvailable:
+		return true
+	case CreateVehicleRequestStatusReserved:
+		return true
+	case CreateVehicleRequestStatusSold:
 		return true
 	default:
 		return false
@@ -156,22 +178,22 @@ func (e ListVehiclesParamsStatus) Valid() bool {
 
 // Defines values for ListVehiclesParamsSortBy.
 const (
-	Make      ListVehiclesParamsSortBy = "make"
-	Price     ListVehiclesParamsSortBy = "price"
-	StockedAt ListVehiclesParamsSortBy = "stocked_at"
-	Year      ListVehiclesParamsSortBy = "year"
+	ListVehiclesParamsSortByMake      ListVehiclesParamsSortBy = "make"
+	ListVehiclesParamsSortByPrice     ListVehiclesParamsSortBy = "price"
+	ListVehiclesParamsSortByStockedAt ListVehiclesParamsSortBy = "stocked_at"
+	ListVehiclesParamsSortByYear      ListVehiclesParamsSortBy = "year"
 )
 
 // Valid indicates whether the value is a known member of the ListVehiclesParamsSortBy enum.
 func (e ListVehiclesParamsSortBy) Valid() bool {
 	switch e {
-	case Make:
+	case ListVehiclesParamsSortByMake:
 		return true
-	case Price:
+	case ListVehiclesParamsSortByPrice:
 		return true
-	case StockedAt:
+	case ListVehiclesParamsSortByStockedAt:
 		return true
-	case Year:
+	case ListVehiclesParamsSortByYear:
 		return true
 	default:
 		return false
@@ -180,16 +202,79 @@ func (e ListVehiclesParamsSortBy) Valid() bool {
 
 // Defines values for ListVehiclesParamsOrder.
 const (
-	Asc  ListVehiclesParamsOrder = "asc"
-	Desc ListVehiclesParamsOrder = "desc"
+	ListVehiclesParamsOrderAsc  ListVehiclesParamsOrder = "asc"
+	ListVehiclesParamsOrderDesc ListVehiclesParamsOrder = "desc"
 )
 
 // Valid indicates whether the value is a known member of the ListVehiclesParamsOrder enum.
 func (e ListVehiclesParamsOrder) Valid() bool {
 	switch e {
-	case Asc:
+	case ListVehiclesParamsOrderAsc:
 		return true
-	case Desc:
+	case ListVehiclesParamsOrderDesc:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ExportVehiclesParamsStatus.
+const (
+	ExportVehiclesParamsStatusAvailable ExportVehiclesParamsStatus = "available"
+	ExportVehiclesParamsStatusReserved  ExportVehiclesParamsStatus = "reserved"
+	ExportVehiclesParamsStatusSold      ExportVehiclesParamsStatus = "sold"
+)
+
+// Valid indicates whether the value is a known member of the ExportVehiclesParamsStatus enum.
+func (e ExportVehiclesParamsStatus) Valid() bool {
+	switch e {
+	case ExportVehiclesParamsStatusAvailable:
+		return true
+	case ExportVehiclesParamsStatusReserved:
+		return true
+	case ExportVehiclesParamsStatusSold:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ExportVehiclesParamsSortBy.
+const (
+	ExportVehiclesParamsSortByMake      ExportVehiclesParamsSortBy = "make"
+	ExportVehiclesParamsSortByPrice     ExportVehiclesParamsSortBy = "price"
+	ExportVehiclesParamsSortByStockedAt ExportVehiclesParamsSortBy = "stocked_at"
+	ExportVehiclesParamsSortByYear      ExportVehiclesParamsSortBy = "year"
+)
+
+// Valid indicates whether the value is a known member of the ExportVehiclesParamsSortBy enum.
+func (e ExportVehiclesParamsSortBy) Valid() bool {
+	switch e {
+	case ExportVehiclesParamsSortByMake:
+		return true
+	case ExportVehiclesParamsSortByPrice:
+		return true
+	case ExportVehiclesParamsSortByStockedAt:
+		return true
+	case ExportVehiclesParamsSortByYear:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ExportVehiclesParamsOrder.
+const (
+	ExportVehiclesParamsOrderAsc  ExportVehiclesParamsOrder = "asc"
+	ExportVehiclesParamsOrderDesc ExportVehiclesParamsOrder = "desc"
+)
+
+// Valid indicates whether the value is a known member of the ExportVehiclesParamsOrder enum.
+func (e ExportVehiclesParamsOrder) Valid() bool {
+	switch e {
+	case ExportVehiclesParamsOrderAsc:
+		return true
+	case ExportVehiclesParamsOrderDesc:
 		return true
 	default:
 		return false
@@ -206,8 +291,25 @@ type CreateVehicleActionRequest struct {
 // CreateVehicleActionRequestActionType defines model for CreateVehicleActionRequest.ActionType.
 type CreateVehicleActionRequestActionType string
 
+// CreateVehicleRequest defines model for CreateVehicleRequest.
+type CreateVehicleRequest struct {
+	DealershipId openapi_types.UUID         `json:"dealership_id"`
+	Make         string                     `json:"make"`
+	Model        string                     `json:"model"`
+	Price        *float64                   `json:"price,omitempty"`
+	Status       CreateVehicleRequestStatus `json:"status"`
+	StockedAt    *time.Time                 `json:"stocked_at,omitempty"`
+	Vin          string                     `json:"vin"`
+	Year         int                        `json:"year"`
+}
+
+// CreateVehicleRequestStatus defines model for CreateVehicleRequest.Status.
+type CreateVehicleRequestStatus string
+
 // DashboardSummary defines model for DashboardSummary.
 type DashboardSummary struct {
+	// ActionsThisMonth Number of vehicle actions created in the last 30 days
+	ActionsThisMonth   int             `json:"actions_this_month"`
 	AgingVehicles      int             `json:"aging_vehicles"`
 	AverageDaysInStock float64         `json:"average_days_in_stock"`
 	ByMake             []MakeSummary   `json:"by_make"`
@@ -356,6 +458,29 @@ type ListVehiclesParamsSortBy string
 // ListVehiclesParamsOrder defines parameters for ListVehicles.
 type ListVehiclesParamsOrder string
 
+// ExportVehiclesParams defines parameters for ExportVehicles.
+type ExportVehiclesParams struct {
+	DealershipId *openapi_types.UUID         `form:"dealership_id,omitempty" json:"dealership_id,omitempty"`
+	Make         *string                     `form:"make,omitempty" json:"make,omitempty"`
+	Model        *string                     `form:"model,omitempty" json:"model,omitempty"`
+	Status       *ExportVehiclesParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+	Aging        *bool                       `form:"aging,omitempty" json:"aging,omitempty"`
+	SortBy       *ExportVehiclesParamsSortBy `form:"sort_by,omitempty" json:"sort_by,omitempty"`
+	Order        *ExportVehiclesParamsOrder  `form:"order,omitempty" json:"order,omitempty"`
+}
+
+// ExportVehiclesParamsStatus defines parameters for ExportVehicles.
+type ExportVehiclesParamsStatus string
+
+// ExportVehiclesParamsSortBy defines parameters for ExportVehicles.
+type ExportVehiclesParamsSortBy string
+
+// ExportVehiclesParamsOrder defines parameters for ExportVehicles.
+type ExportVehiclesParamsOrder string
+
+// CreateVehicleJSONRequestBody defines body for CreateVehicle for application/json ContentType.
+type CreateVehicleJSONRequestBody = CreateVehicleRequest
+
 // CreateVehicleActionJSONRequestBody defines body for CreateVehicleAction for application/json ContentType.
 type CreateVehicleActionJSONRequestBody = CreateVehicleActionRequest
 
@@ -370,6 +495,12 @@ type ServerInterface interface {
 	// List vehicles with filters
 	// (GET /api/v1/vehicles)
 	ListVehicles(w http.ResponseWriter, r *http.Request, params ListVehiclesParams)
+	// Create a new vehicle
+	// (POST /api/v1/vehicles)
+	CreateVehicle(w http.ResponseWriter, r *http.Request)
+	// Export filtered vehicles as CSV
+	// (GET /api/v1/vehicles/export)
+	ExportVehicles(w http.ResponseWriter, r *http.Request, params ExportVehiclesParams)
 	// Get vehicle details
 	// (GET /api/v1/vehicles/{id})
 	GetVehicle(w http.ResponseWriter, r *http.Request, id openapi_types.UUID)
@@ -403,6 +534,18 @@ func (_ Unimplemented) ListDealerships(w http.ResponseWriter, r *http.Request) {
 // List vehicles with filters
 // (GET /api/v1/vehicles)
 func (_ Unimplemented) ListVehicles(w http.ResponseWriter, r *http.Request, params ListVehiclesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new vehicle
+// (POST /api/v1/vehicles)
+func (_ Unimplemented) CreateVehicle(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Export filtered vehicles as CSV
+// (GET /api/v1/vehicles/export)
+func (_ Unimplemented) ExportVehicles(w http.ResponseWriter, r *http.Request, params ExportVehiclesParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -549,6 +692,95 @@ func (siw *ServerInterfaceWrapper) ListVehicles(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListVehicles(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateVehicle operation middleware
+func (siw *ServerInterfaceWrapper) CreateVehicle(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateVehicle(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ExportVehicles operation middleware
+func (siw *ServerInterfaceWrapper) ExportVehicles(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ExportVehiclesParams
+
+	// ------------- Optional query parameter "dealership_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "dealership_id", r.URL.Query(), &params.DealershipId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "dealership_id", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "make" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "make", r.URL.Query(), &params.Make, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "make", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "model" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "model", r.URL.Query(), &params.Model, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "model", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "aging" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "aging", r.URL.Query(), &params.Aging, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "aging", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "sort_by" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "sort_by", r.URL.Query(), &params.SortBy, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sort_by", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "order" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "order", r.URL.Query(), &params.Order, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "order", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExportVehicles(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -770,6 +1002,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/api/v1/vehicles", wrapper.ListVehicles)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/vehicles", wrapper.CreateVehicle)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/vehicles/export", wrapper.ExportVehicles)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/vehicles/{id}", wrapper.GetVehicle)
 	})
 	r.Group(func(r chi.Router) {
@@ -864,6 +1102,95 @@ func (response ListVehicles400JSONResponse) VisitListVehiclesResponse(w http.Res
 type ListVehicles500JSONResponse ErrorResponse
 
 func (response ListVehicles500JSONResponse) VisitListVehiclesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateVehicleRequestObject struct {
+	Body *CreateVehicleJSONRequestBody
+}
+
+type CreateVehicleResponseObject interface {
+	VisitCreateVehicleResponse(w http.ResponseWriter) error
+}
+
+type CreateVehicle201JSONResponse Vehicle
+
+func (response CreateVehicle201JSONResponse) VisitCreateVehicleResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateVehicle400JSONResponse ErrorResponse
+
+func (response CreateVehicle400JSONResponse) VisitCreateVehicleResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateVehicle409JSONResponse ErrorResponse
+
+func (response CreateVehicle409JSONResponse) VisitCreateVehicleResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateVehicle500JSONResponse ErrorResponse
+
+func (response CreateVehicle500JSONResponse) VisitCreateVehicleResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ExportVehiclesRequestObject struct {
+	Params ExportVehiclesParams
+}
+
+type ExportVehiclesResponseObject interface {
+	VisitExportVehiclesResponse(w http.ResponseWriter) error
+}
+
+type ExportVehicles200TextcsvResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response ExportVehicles200TextcsvResponse) VisitExportVehiclesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "text/csv")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type ExportVehicles400JSONResponse ErrorResponse
+
+func (response ExportVehicles400JSONResponse) VisitExportVehiclesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ExportVehicles500JSONResponse ErrorResponse
+
+func (response ExportVehicles500JSONResponse) VisitExportVehiclesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(500)
 
@@ -1021,6 +1348,12 @@ type StrictServerInterface interface {
 	// List vehicles with filters
 	// (GET /api/v1/vehicles)
 	ListVehicles(ctx context.Context, request ListVehiclesRequestObject) (ListVehiclesResponseObject, error)
+	// Create a new vehicle
+	// (POST /api/v1/vehicles)
+	CreateVehicle(ctx context.Context, request CreateVehicleRequestObject) (CreateVehicleResponseObject, error)
+	// Export filtered vehicles as CSV
+	// (GET /api/v1/vehicles/export)
+	ExportVehicles(ctx context.Context, request ExportVehiclesRequestObject) (ExportVehiclesResponseObject, error)
 	// Get vehicle details
 	// (GET /api/v1/vehicles/{id})
 	GetVehicle(ctx context.Context, request GetVehicleRequestObject) (GetVehicleResponseObject, error)
@@ -1131,6 +1464,63 @@ func (sh *strictHandler) ListVehicles(w http.ResponseWriter, r *http.Request, pa
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ListVehiclesResponseObject); ok {
 		if err := validResponse.VisitListVehiclesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateVehicle operation middleware
+func (sh *strictHandler) CreateVehicle(w http.ResponseWriter, r *http.Request) {
+	var request CreateVehicleRequestObject
+
+	var body CreateVehicleJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateVehicle(ctx, request.(CreateVehicleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateVehicle")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateVehicleResponseObject); ok {
+		if err := validResponse.VisitCreateVehicleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ExportVehicles operation middleware
+func (sh *strictHandler) ExportVehicles(w http.ResponseWriter, r *http.Request, params ExportVehiclesParams) {
+	var request ExportVehiclesRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ExportVehicles(ctx, request.(ExportVehiclesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ExportVehicles")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ExportVehiclesResponseObject); ok {
+		if err := validResponse.VisitExportVehiclesResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
