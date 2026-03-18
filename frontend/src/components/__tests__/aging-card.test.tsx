@@ -4,6 +4,7 @@ import { AgingCard } from "@/components/aging-card";
 
 const mockVehicle = {
   id: "v1",
+  dealership_id: "00000000-0000-0000-0000-000000000001",
   make: "Honda",
   model: "Civic",
   year: 2021,
@@ -12,6 +13,9 @@ const mockVehicle = {
   price: 22000,
   days_in_stock: 120,
   is_aging: true,
+  stocked_at: "2024-01-01T00:00:00Z",
+  created_at: "2024-01-01T00:00:00Z",
+  updated_at: "2024-01-01T00:00:00Z",
   actions: [],
 };
 
