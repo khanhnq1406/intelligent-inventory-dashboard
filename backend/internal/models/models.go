@@ -46,6 +46,18 @@ type CreateActionInput struct {
 	CreatedBy  string `json:"created_by"`
 }
 
+// CreateVehicleInput contains validated data for creating a new vehicle.
+type CreateVehicleInput struct {
+	DealershipID uuid.UUID
+	Make         string
+	Model        string
+	Year         int
+	VIN          string
+	Price        *float64 // optional
+	Status       string
+	StockedAt    time.Time // defaults to now if not provided
+}
+
 type VehicleFilters struct {
 	DealershipID *uuid.UUID
 	Make         string
@@ -67,11 +79,12 @@ type PaginatedVehicles struct {
 }
 
 type DashboardSummary struct {
-	TotalVehicles  int             `json:"total_vehicles"`
-	AgingVehicles  int             `json:"aging_vehicles"`
-	AvgDaysInStock float64         `json:"average_days_in_stock"`
-	ByMake         []MakeSummary   `json:"by_make"`
-	ByStatus       []StatusSummary `json:"by_status"`
+	TotalVehicles    int             `json:"total_vehicles"`
+	AgingVehicles    int             `json:"aging_vehicles"`
+	AvgDaysInStock   float64         `json:"average_days_in_stock"`
+	ActionsThisMonth int             `json:"actions_this_month"`
+	ByMake           []MakeSummary   `json:"by_make"`
+	ByStatus         []StatusSummary `json:"by_status"`
 }
 
 type MakeSummary struct {
