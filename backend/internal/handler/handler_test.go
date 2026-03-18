@@ -401,6 +401,51 @@ func TestCreateVehicleAction_NilBody(t *testing.T) {
 	}
 }
 
+func TestListVehicles_IncludesActions(t *testing.T) {
+	vid := uuid.New()
+	actionID := uuid.New()
+	now := time.Now()
+	price := 25000.0
+	srv := NewServer(nil, nil,
+		&mockVehicleService{
+			paginatedVehicles: &models.PaginatedVehicles{
+				Items: []models.Vehicle{
+					{
+						ID: vid, Make: "Honda", Model: "Civic", Year: 2023, VIN: "VIN123",
+						Price: &price, Status: "available", StockedAt: now, DaysInStock: 30,
+						Actions: []models.VehicleAction{
+							{ID: actionID, VehicleID: vid, ActionType: "price_reduction", CreatedBy: "Manager", CreatedAt: now},
+						},
+					},
+				},
+				Total: 1, Page: 1, PageSize: 20, TotalPages: 1,
+			},
+		},
+		nil, nil,
+	)
+	resp, err := srv.ListVehicles(context.Background(), ListVehiclesRequestObject{})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	r, ok := resp.(ListVehicles200JSONResponse)
+	if !ok {
+		t.Fatalf("expected ListVehicles200JSONResponse, got %T", resp)
+	}
+	if len(r.Items) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(r.Items))
+	}
+	item := r.Items[0]
+	if item.Actions == nil {
+		t.Fatal("expected Actions to be non-nil")
+	}
+	if len(*item.Actions) != 1 {
+		t.Errorf("expected 1 action, got %d", len(*item.Actions))
+	}
+	if (*item.Actions)[0].Id != actionID {
+		t.Errorf("expected action ID %v, got %v", actionID, (*item.Actions)[0].Id)
+	}
+}
+
 // --- GetDashboardSummary Tests ---
 
 func TestGetDashboardSummary_Success(t *testing.T) {

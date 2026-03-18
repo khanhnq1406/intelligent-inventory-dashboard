@@ -7,14 +7,14 @@
 - **Started:** 2026-03-18T00:00:00Z
 - **Last updated:** 2026-03-18T00:00:00Z
 - **Current state:** in_progress
-- **Current task:** 1
+- **Current task:** 3 (manual smoke test)
 
 ## Task Progress
 
 | # | Task Name | Status | Commit | Summary |
 |---|-----------|--------|--------|---------|
-| 1 | Repository — Add LEFT JOIN LATERAL to List | in_progress | — | — |
-| 2 | Handler — Map Actions in ListVehicles | pending | — | — |
+| 1 | Repository — Add LEFT JOIN LATERAL to List | done | 796d004 | LEFT JOIN LATERAL + vehicleMap grouping + vehicle_test.go |
+| 2 | Handler — Map Actions in ListVehicles | done | — | Map v.Actions onto ListVehicles response; TestListVehicles_IncludesActions |
 | 3 | End-to-End Smoke Test (Manual) | pending | — | — |
 
 ## Resume Instructions

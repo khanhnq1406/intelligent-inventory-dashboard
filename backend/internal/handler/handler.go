@@ -103,7 +103,13 @@ func (s *Server) ListVehicles(ctx context.Context, request ListVehiclesRequestOb
 
 	items := make([]Vehicle, 0, len(result.Items))
 	for _, v := range result.Items {
-		items = append(items, modelVehicleToResponse(v))
+		resp := modelVehicleToResponse(v)
+		actions := make([]VehicleAction, 0, len(v.Actions))
+		for _, a := range v.Actions {
+			actions = append(actions, modelActionToResponse(a))
+		}
+		resp.Actions = &actions
+		items = append(items, resp)
 	}
 
 	return ListVehicles200JSONResponse{
