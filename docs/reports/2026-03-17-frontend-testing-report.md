@@ -129,3 +129,4 @@ npm run test:e2e:ui         # Run with Playwright UI mode
 |------|-----|----------|--------|
 | 2026-03-17 | Added unit/component tests and E2E tests to `ci-frontend.yml` GitHub Actions workflow | Minor | — |
 | 2026-03-17 | Fixed ESLint errors: replaced `any` with typed tuples/generics in 8 test files, removed unused imports in vehicle-filters test | Minor | — |
+| 2026-03-18 | Bumped CI Node.js from 18 to 20 in `ci-frontend.yml` (both `build-and-lint` and `e2e` jobs) — `vitest@4.x` requires Node `^20.0.0` due to `rolldown` using `node:util#styleText` which was added in Node 20.12.0 | Minor | — |
