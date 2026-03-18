@@ -492,3 +492,112 @@ func TestGetDashboardSummary_ServiceError(t *testing.T) {
 		t.Errorf("expected GetDashboardSummary500JSONResponse, got %T", resp)
 	}
 }
+
+// --- ListRecentActions Tests ---
+
+func ptr[T any](v T) *T { return &v }
+
+func TestListRecentActions_Success(t *testing.T) {
+	actionID := uuid.New()
+	vehicleID := uuid.New()
+	now := time.Now()
+	srv := NewServer(nil, nil, nil,
+		&mockActionService{
+			recentActions: []models.RecentAction{
+				{
+					ID: actionID, VehicleID: vehicleID,
+					VehicleMake: "Toyota", VehicleModel: "Camry", VehicleYear: 2022,
+					DaysInStock: 120, ActionType: "price_reduction",
+					CreatedBy: "John", CreatedAt: now,
+				},
+			},
+		},
+		nil,
+	)
+	resp, err := srv.ListRecentActions(context.Background(), ListRecentActionsRequestObject{
+		Params: ListRecentActionsParams{Limit: ptr(3)},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	r, ok := resp.(ListRecentActions200JSONResponse)
+	if !ok {
+		t.Fatalf("expected ListRecentActions200JSONResponse, got %T", resp)
+	}
+	if len(r) != 1 {
+		t.Errorf("expected 1 action, got %d", len(r))
+	}
+	if r[0].VehicleMake != "Toyota" {
+		t.Errorf("expected VehicleMake=Toyota, got %s", r[0].VehicleMake)
+	}
+	if r[0].ActionType != RecentActionActionTypePriceReduction {
+		t.Errorf("expected ActionType=price_reduction, got %s", r[0].ActionType)
+	}
+}
+
+func TestListRecentActions_DefaultLimit(t *testing.T) {
+	srv := NewServer(nil, nil, nil,
+		&mockActionService{recentActions: []models.RecentAction{}},
+		nil,
+	)
+	// No limit param — should default to 10
+	resp, err := srv.ListRecentActions(context.Background(), ListRecentActionsRequestObject{
+		Params: ListRecentActionsParams{},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if _, ok := resp.(ListRecentActions200JSONResponse); !ok {
+		t.Errorf("expected ListRecentActions200JSONResponse, got %T", resp)
+	}
+}
+
+func TestListRecentActions_ServiceError(t *testing.T) {
+	srv := NewServer(nil, nil, nil,
+		&mockActionService{listRecentErr: errors.New("db error")},
+		nil,
+	)
+	resp, err := srv.ListRecentActions(context.Background(), ListRecentActionsRequestObject{
+		Params: ListRecentActionsParams{Limit: ptr(3)},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if _, ok := resp.(ListRecentActions500JSONResponse); !ok {
+		t.Errorf("expected ListRecentActions500JSONResponse, got %T", resp)
+	}
+}
+
+func TestListRecentActions_InvalidLimit_Returns400(t *testing.T) {
+	srv := NewServer(nil, nil, nil,
+		&mockActionService{listRecentErr: errors.New("limit must be between 1 and 50")},
+		nil,
+	)
+	resp, err := srv.ListRecentActions(context.Background(), ListRecentActionsRequestObject{
+		Params: ListRecentActionsParams{Limit: ptr(3)},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if _, ok := resp.(ListRecentActions400JSONResponse); !ok {
+		t.Errorf("expected ListRecentActions400JSONResponse, got %T", resp)
+	}
+}
+
+func TestListRecentActions_WithDealershipFilter(t *testing.T) {
+	dealershipID := uuid.MustParse("a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d")
+	srv := NewServer(nil, nil, nil,
+		&mockActionService{recentActions: []models.RecentAction{}},
+		nil,
+	)
+	dID := openapi_types.UUID(dealershipID)
+	resp, err := srv.ListRecentActions(context.Background(), ListRecentActionsRequestObject{
+		Params: ListRecentActionsParams{Limit: ptr(5), DealershipId: &dID},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if _, ok := resp.(ListRecentActions200JSONResponse); !ok {
+		t.Errorf("expected ListRecentActions200JSONResponse, got %T", resp)
+	}
+}

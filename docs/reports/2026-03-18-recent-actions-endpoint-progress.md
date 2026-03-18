@@ -7,7 +7,7 @@
 - **Started:** 2026-03-18T00:00:00Z
 - **Last updated:** 2026-03-18T00:00:00Z
 - **Current state:** in_progress
-- **Current task:** 4
+- **Current task:** 5
 
 ## Task Progress
 
@@ -17,7 +17,7 @@
 | 1 | OpenAPI spec — RecentAction schema + endpoint | done | 17a08ec | Added RecentAction schema, endpoint, regenerated types, added handler stub |
 | 2 | Model — add RecentAction + RecentActionsFilter | done | 428fb58 | Added RecentAction and RecentActionsFilter structs |
 | 3 | Repository — add ListRecent | done | 20aafec | Added ListRecent to interface and impl with JOIN vehicles query |
-| 4 | Service — add ListRecent with validation | pending | — | — |
+| 4 | Service — add ListRecent with validation | done | 32c1459 | Added ListRecent with limit [1,50] validation, 7 table-driven tests pass |
 | 5 | Handler — implement ListRecentActions | pending | — | — |
 | 6 | Frontend hook — useRecentActions | pending | — | — |
 | 7 | Dashboard — replace workaround with useRecentActions | pending | — | — |

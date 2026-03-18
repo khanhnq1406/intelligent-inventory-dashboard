@@ -246,11 +246,51 @@ func (s *Server) GetDashboardSummary(ctx context.Context, _ GetDashboardSummaryR
 }
 
 func (s *Server) ListRecentActions(ctx context.Context, request ListRecentActionsRequestObject) (ListRecentActionsResponseObject, error) {
-	// TODO: implemented in Task 5
-	return ListRecentActions500JSONResponse{
-		Code:    http.StatusInternalServerError,
-		Message: "not implemented",
-	}, nil
+	limit := 10
+	if request.Params.Limit != nil {
+		limit = *request.Params.Limit
+	}
+
+	filter := models.RecentActionsFilter{Limit: limit}
+	if request.Params.DealershipId != nil {
+		id := uuid.UUID(*request.Params.DealershipId)
+		filter.DealershipID = &id
+	}
+
+	actions, err := s.actionSvc.ListRecent(ctx, filter)
+	if err != nil {
+		if strings.Contains(err.Error(), "limit must be between") {
+			return ListRecentActions400JSONResponse{
+				Code:    http.StatusBadRequest,
+				Message: err.Error(),
+			}, nil
+		}
+		return ListRecentActions500JSONResponse{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to retrieve recent actions",
+		}, nil
+	}
+
+	resp := make(ListRecentActions200JSONResponse, 0, len(actions))
+	for _, a := range actions {
+		ra := RecentAction{
+			Id:           a.ID,
+			VehicleId:    a.VehicleID,
+			VehicleMake:  a.VehicleMake,
+			VehicleModel: a.VehicleModel,
+			VehicleYear:  a.VehicleYear,
+			DaysInStock:  a.DaysInStock,
+			ActionType:   RecentActionActionType(a.ActionType),
+			CreatedBy:    a.CreatedBy,
+			CreatedAt:    a.CreatedAt,
+		}
+		if a.Notes != "" {
+			notes := a.Notes
+			ra.Notes = &notes
+		}
+		resp = append(resp, ra)
+	}
+	return resp, nil
 }
 
 // --- Helper functions ---
