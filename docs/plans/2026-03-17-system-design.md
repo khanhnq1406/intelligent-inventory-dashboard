@@ -454,8 +454,8 @@ sequenceDiagram
   S->>S: Encode []Vehicle to CSV bytes (encoding/csv)
   S-->>H: []byte (CSV content)
   H->>H: Set Content-Type: text/csv
-  H->>H: Set Content-Disposition: attachment; filename="vehicles-export-YYYY-MM-DD.csv"
-  H-->>FE: 200 OK (binary CSV body)
+  H->>H: Set Content-Disposition header with filename vehicles-export-YYYY-MM-DD.csv
+  H-->>FE: 200 OK with binary CSV body
   FE->>FE: Browser triggers file download
 ```
 
@@ -854,3 +854,43 @@ GenAI served as a **collaborative design partner** throughout the system design 
 - Each design section was reviewed for correctness before being incorporated.
 - The final document was validated against the original requirements to ensure all three core requirements (inventory visualization, aging stock identification, actionable insights) were fully addressed.
 - Technology justifications were cross-checked to ensure they matched real-world capabilities and version compatibility.
+
+### 11.6 System Design Process
+
+The system design document itself was produced through a structured AI collaboration:
+
+1. **Core requirements provided** — The task description and tech stack constraints (Go + Next.js) were given as input.
+2. **Brainstorm architecture** — AI proposed multiple architecture patterns (monolith vs microservices, REST vs gRPC, SQL vs NoSQL). For each decision, pros and cons were presented and the human architect chose the direction.
+3. **Design document in sections** — Architecture, data model, API design, data flows, and observability were produced iteratively. Each section was reviewed and approved before moving to the next.
+4. **UI mockup design** — Before writing frontend code, UI mockups were designed using Claude Code combined with Pencil MCP to create `.pen` design files. Each screen (dashboard, inventory, aging stock, vehicle detail) was visually validated before implementation.
+
+### 11.7 Feature Implementation Process (secure-feature-pipeline)
+
+Every feature in this project followed a repeatable, quality-controlled pipeline composed from curated community skills:
+
+**Skills used:**
+- **Superpowers** (by Jesse Vincent & Prime Radiant) — foundational skills for brainstorming, planning, executing plans, and verification
+- **React Best Practices** (by Vercel Team) — frontend patterns and performance guidelines
+- **CI/CD Best Practices** — automated pipeline patterns
+- **C4 Architecture** — architecture documentation with Mermaid diagrams
+- **TDD & Systematic Debugging** — test-driven development and structured debugging
+
+**The pipeline for each feature:**
+
+```
+1. Brainstorm    → AI asks questions, human makes decisions about requirements
+2. Spec          → AI generates a detailed specification file
+3. Review #1     → Human reviews and adjusts the spec
+4. Plan          → AI generates a step-by-step implementation plan
+5. Review #2     → Human reviews and adjusts the plan
+6. Implement     → AI implements following the approved plan
+7. Report        → AI writes an implementation report
+8. Manual Test   → Human verifies the feature works correctly
+9. Fix           → If bugs found, human describes them and AI resolves
+```
+
+**Key principles:**
+- Every piece of code goes through at least **two rounds of human review** — once at the spec level and once at the implementation level.
+- AI proposes, human decides — no code is written without human-approved direction.
+- The pipeline turns AI collaboration from ad-hoc prompting into a **repeatable, quality-controlled process**.
+- Bugs feed back into the cycle — the human describes the issue, AI investigates and fixes, then the fix is verified.

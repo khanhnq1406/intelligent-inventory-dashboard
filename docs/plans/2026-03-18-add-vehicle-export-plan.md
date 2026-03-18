@@ -154,7 +154,7 @@ sequenceDiagram
   S->>S: Encode []Vehicle to CSV bytes (encoding/csv)
   S-->>H: []byte (CSV content)
   H->>H: Set Content-Type: text/csv
-  H->>H: Set Content-Disposition: attachment; filename="vehicles-export-YYYY-MM-DD.csv"
+  H->>H: Set Content-Disposition: attachment; filename=vehicles-export-YYYY-MM-DD.csv
   H-->>FE: 200 OK (binary CSV body)
   FE->>FE: Browser triggers file download
 ```
