@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Car, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const navItems = [
   { href: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -15,7 +16,8 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-16 flex-col items-center bg-zinc-950 py-4">
+    // hidden on mobile (<768px), icon-only on md+ (768px+)
+    <aside className="fixed left-0 top-0 z-40 hidden md:flex h-screen w-16 flex-col items-center bg-zinc-950 py-4">
       {/* Logo */}
       <Link
         href="/"
@@ -25,7 +27,7 @@ export function Sidebar() {
       </Link>
 
       {/* Nav icons */}
-      <nav className="flex flex-col gap-2">
+      <nav className="flex flex-col gap-2 flex-1">
         {navItems.map((item) => {
           const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           return (
@@ -45,6 +47,9 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Theme toggle at bottom */}
+      <ThemeToggle />
     </aside>
   );
 }

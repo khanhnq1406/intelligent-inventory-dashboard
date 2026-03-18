@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/lib/providers";
 import { Sidebar } from "@/components/sidebar";
+import { MobileNav } from "@/components/mobile-nav";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -28,8 +29,10 @@ export default function RootLayout({
       >
         <Providers>
           <Sidebar />
-          <main className="ml-16 min-h-screen bg-zinc-50">
-            <div className="mx-auto max-w-7xl px-6 py-6">
+          <MobileNav />
+          {/* On mobile: no left margin (sidebar hidden). On md+: ml-16 for icon sidebar */}
+          <main className="min-h-screen bg-zinc-50 dark:bg-zinc-900 md:ml-16">
+            <div className="mx-auto max-w-7xl px-4 py-4 pt-16 sm:px-6 sm:py-6 md:pt-6">
               {children}
             </div>
           </main>
