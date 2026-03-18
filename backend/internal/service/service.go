@@ -18,6 +18,8 @@ type DealershipService interface {
 type VehicleService interface {
 	List(ctx context.Context, filters models.VehicleFilters) (*models.PaginatedVehicles, error)
 	GetByID(ctx context.Context, id uuid.UUID) (*models.Vehicle, error)
+	Create(ctx context.Context, input models.CreateVehicleInput) (*models.Vehicle, error)
+	ExportCSV(ctx context.Context, filters models.VehicleFilters) ([]byte, error)
 }
 
 type VehicleActionService interface {

@@ -2,11 +2,13 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/khanh/intelligent-inventory-dashboard/backend/internal/models"
 )
@@ -27,8 +29,8 @@ var sortColumnMap = map[string]string{
 	"make":       "v.make",
 }
 
-func (r *pgxVehicle) List(ctx context.Context, filters models.VehicleFilters) ([]models.Vehicle, int, error) {
-	// Build dynamic WHERE clause
+// buildConditions builds WHERE clause conditions and args from filters.
+func buildConditions(filters models.VehicleFilters) ([]string, []interface{}) {
 	var conditions []string
 	var args []interface{}
 	argIdx := 1
@@ -56,11 +58,37 @@ func (r *pgxVehicle) List(ctx context.Context, filters models.VehicleFilters) ([
 	if filters.Aging != nil && *filters.Aging {
 		conditions = append(conditions, "v.stocked_at <= NOW() - INTERVAL '90 days'")
 	}
+	_ = argIdx // suppress unused warning
+	return conditions, args
+}
 
-	whereClause := ""
-	if len(conditions) > 0 {
-		whereClause = "WHERE " + strings.Join(conditions, " AND ")
+// buildWhereClause joins conditions into a SQL WHERE clause.
+func buildWhereClause(conditions []string) string {
+	if len(conditions) == 0 {
+		return ""
 	}
+	return "WHERE " + strings.Join(conditions, " AND ")
+}
+
+// validateSortColumn returns whitelisted column name, defaulting to v.stocked_at.
+func validateSortColumn(sortBy string) string {
+	if col, ok := sortColumnMap[sortBy]; ok {
+		return col
+	}
+	return "v.stocked_at"
+}
+
+// validateSortOrder returns "ASC" or "DESC".
+func validateSortOrder(order string) string {
+	if order == "asc" {
+		return "ASC"
+	}
+	return "DESC"
+}
+
+func (r *pgxVehicle) List(ctx context.Context, filters models.VehicleFilters) ([]models.Vehicle, int, error) {
+	conditions, args := buildConditions(filters)
+	whereClause := buildWhereClause(conditions)
 
 	// Count total matching rows
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM vehicles v %s", whereClause)
@@ -69,18 +97,12 @@ func (r *pgxVehicle) List(ctx context.Context, filters models.VehicleFilters) ([
 		return nil, 0, fmt.Errorf("counting vehicles: %w", err)
 	}
 
-	// Sort column (whitelisted)
-	sortCol := "v.stocked_at"
-	if col, ok := sortColumnMap[filters.SortBy]; ok {
-		sortCol = col
-	}
-	sortOrder := "DESC"
-	if filters.Order == "asc" {
-		sortOrder = "ASC"
-	}
+	sortCol := validateSortColumn(filters.SortBy)
+	sortOrder := validateSortOrder(filters.Order)
 
 	// Pagination
 	offset := (filters.Page - 1) * filters.PageSize
+	argIdx := len(args) + 1
 
 	// Main query
 	query := fmt.Sprintf(`
@@ -118,6 +140,89 @@ func (r *pgxVehicle) List(ctx context.Context, filters models.VehicleFilters) ([
 	}
 
 	return vehicles, total, nil
+}
+
+func (r *pgxVehicle) ListAll(ctx context.Context, filters models.VehicleFilters) ([]models.Vehicle, int, error) {
+	conditions, args := buildConditions(filters)
+	whereClause := buildWhereClause(conditions)
+
+	sortCol := validateSortColumn(filters.SortBy)
+	sortOrder := validateSortOrder(filters.Order)
+
+	// Count first
+	var total int
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM vehicles v %s", whereClause)
+	if err := r.pool.QueryRow(ctx, countQuery, args...).Scan(&total); err != nil {
+		return nil, 0, fmt.Errorf("counting vehicles for export: %w", err)
+	}
+
+	// Fetch all rows (no LIMIT/OFFSET)
+	query := fmt.Sprintf(`
+		SELECT v.id, v.dealership_id, v.make, v.model, v.year, v.vin, v.price,
+		       v.status, v.stocked_at, v.created_at, v.updated_at,
+		       EXTRACT(EPOCH FROM NOW() - v.stocked_at)::int / 86400 AS days_in_stock
+		FROM vehicles v %s
+		ORDER BY %s %s`, whereClause, sortCol, sortOrder)
+
+	rows, err := r.pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, 0, fmt.Errorf("querying vehicles for export: %w", err)
+	}
+	defer rows.Close()
+
+	var vehicles []models.Vehicle
+	for rows.Next() {
+		var v models.Vehicle
+		if err := rows.Scan(&v.ID, &v.DealershipID, &v.Make, &v.Model, &v.Year,
+			&v.VIN, &v.Price, &v.Status, &v.StockedAt, &v.CreatedAt, &v.UpdatedAt,
+			&v.DaysInStock); err != nil {
+			return nil, 0, fmt.Errorf("scanning vehicle for export: %w", err)
+		}
+		v.IsAging = v.DaysInStock > 90
+		vehicles = append(vehicles, v)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, fmt.Errorf("iterating vehicles for export: %w", err)
+	}
+	if vehicles == nil {
+		vehicles = []models.Vehicle{}
+	}
+	return vehicles, total, nil
+}
+
+func (r *pgxVehicle) Create(ctx context.Context, input models.CreateVehicleInput) (*models.Vehicle, error) {
+	query := `
+		INSERT INTO vehicles (dealership_id, make, model, year, vin, price, status, stocked_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING id, dealership_id, make, model, year, vin, price, status, stocked_at,
+		          created_at, updated_at,
+		          EXTRACT(EPOCH FROM NOW() - stocked_at)::int / 86400 AS days_in_stock`
+
+	var v models.Vehicle
+	err := r.pool.QueryRow(ctx, query,
+		input.DealershipID,
+		input.Make,
+		input.Model,
+		input.Year,
+		input.VIN,
+		input.Price,
+		input.Status,
+		input.StockedAt,
+	).Scan(
+		&v.ID, &v.DealershipID, &v.Make, &v.Model, &v.Year, &v.VIN,
+		&v.Price, &v.Status, &v.StockedAt, &v.CreatedAt, &v.UpdatedAt,
+		&v.DaysInStock,
+	)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return nil, ErrDuplicateVIN
+		}
+		return nil, fmt.Errorf("creating vehicle: %w", err)
+	}
+	v.IsAging = v.DaysInStock > 90
+	v.Actions = []models.VehicleAction{}
+	return &v, nil
 }
 
 func (r *pgxVehicle) GetByID(ctx context.Context, id uuid.UUID) (*models.Vehicle, error) {

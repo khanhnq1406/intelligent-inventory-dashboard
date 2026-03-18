@@ -57,6 +57,30 @@ export interface paths {
          */
         get: operations["listVehicles"];
         put?: never;
+        /**
+         * Create a new vehicle
+         * @description Adds a new vehicle to the inventory.
+         */
+        post: operations["createVehicle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vehicles/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export filtered vehicles as CSV
+         * @description Exports all vehicles matching the given filters as a CSV file. No pagination — exports all matching records (max 10,000).
+         */
+        get: operations["exportVehicles"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -214,6 +238,8 @@ export interface components {
             aging_vehicles: number;
             /** Format: double */
             average_days_in_stock: number;
+            /** @description Number of vehicle actions created in the last 30 days */
+            actions_this_month: number;
             by_make: components["schemas"]["MakeSummary"][];
             by_status: components["schemas"]["StatusSummary"][];
         };
@@ -225,6 +251,20 @@ export interface components {
         StatusSummary: {
             status: string;
             count: number;
+        };
+        CreateVehicleRequest: {
+            /** Format: uuid */
+            dealership_id: string;
+            make: string;
+            model: string;
+            year: number;
+            vin: string;
+            /** Format: double */
+            price?: number;
+            /** @enum {string} */
+            status: "available" | "sold" | "reserved";
+            /** Format: date-time */
+            stocked_at?: string;
         };
         ErrorResponse: {
             /** @description HTTP status code */
@@ -337,6 +377,103 @@ export interface operations {
                 };
             };
             /** @description Invalid query parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    createVehicle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateVehicleRequest"];
+            };
+        };
+        responses: {
+            /** @description Vehicle created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vehicle"];
+                };
+            };
+            /** @description Invalid request body or validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description A vehicle with this VIN already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    exportVehicles: {
+        parameters: {
+            query?: {
+                dealership_id?: string;
+                make?: string;
+                model?: string;
+                status?: "available" | "sold" | "reserved";
+                aging?: boolean;
+                sort_by?: "stocked_at" | "price" | "year" | "make";
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CSV file download */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+            /** @description Invalid query parameters or export limit exceeded */
             400: {
                 headers: {
                     [name: string]: unknown;

@@ -93,7 +93,7 @@ export default function DashboardPage() {
             title="Avg. Days in Stock"
             value={Math.round(summary.average_days_in_stock)}
           />
-          <StatsCard title="Actions This Month" value="-" description="Coming soon" />
+          <StatsCard title="Actions This Month" value={summary.actions_this_month} />
         </div>
       ) : null}
 

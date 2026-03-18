@@ -18,6 +18,10 @@ func (m *mockDealershipRepo) List(_ context.Context) ([]models.Dealership, error
 	return m.dealerships, m.err
 }
 
+func (m *mockDealershipRepo) GetByID(_ context.Context, _ uuid.UUID) (*models.Dealership, error) {
+	return nil, nil
+}
+
 func TestDealershipService_List(t *testing.T) {
 	tests := []struct {
 		name      string

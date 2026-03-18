@@ -71,8 +71,8 @@ C4Component
   Container_Boundary(api, "Backend API") {
     Component(handler, "HTTP Handlers", "Go, oapi-codegen", "Generated Chi handlers + custom implementations")
     Component(middleware, "Middleware", "Go", "Request ID, Logging, CORS, Duration")
-    Component(service, "Service Layer", "Go", "Business logic, validation, aging computation")
-    Component(repository, "Repository Layer", "Go, pgx", "Database queries, parameterized SQL")
+    Component(service, "Service Layer", "Go", "Business logic, validation, aging computation, Create/ExportCSV for vehicles")
+    Component(repository, "Repository Layer", "Go, pgx", "Database queries, parameterized SQL, Create/ListAll for vehicles")
     Component(config, "Config", "Go", "Environment-based configuration")
     Component(models, "Domain Models", "Go", "Dealership, Vehicle, VehicleAction structs")
   }
@@ -110,12 +110,15 @@ C4Component
     Component(info_card, "VehicleInfoCard", "React", "Vehicle detail fields display")
     Component(timeline, "ActionTimeline", "React", "Chronological action history")
     Component(action_form, "ActionForm", "React", "Log new action mutation form")
+    Component(add_vehicle_modal, "AddVehicleModal", "React", "Modal form to create a new vehicle with full validation")
     Component(charts, "Charts", "Recharts", "Bar chart (by make) + Donut chart (by status)")
 
     Component(hook_summary, "useDashboardSummary", "TanStack Query", "Fetches dashboard aggregates")
     Component(hook_vehicles, "useVehicles", "TanStack Query", "Fetches paginated vehicle list")
     Component(hook_vehicle, "useVehicle", "TanStack Query", "Fetches single vehicle detail")
     Component(hook_action, "useCreateVehicleAction", "TanStack Query", "Mutation: log action")
+    Component(hook_create_vehicle, "useCreateVehicle", "TanStack Query", "Mutation: create vehicle, invalidates vehicles + dashboard")
+    Component(hook_dealerships, "useDealerships", "TanStack Query", "Fetches dealership list for modal dropdown")
     Component(api_client, "apiFetch", "TypeScript", "Typed HTTP client wrapper")
   }
 
@@ -127,6 +130,11 @@ C4Component
   Rel(aging_page, hook_vehicles, "uses")
   Rel(detail_page, hook_vehicle, "uses")
   Rel(detail_page, hook_action, "uses")
+  Rel(inventory_page, add_vehicle_modal, "opens")
+  Rel(add_vehicle_modal, hook_create_vehicle, "uses")
+  Rel(add_vehicle_modal, hook_dealerships, "uses")
+  Rel(hook_create_vehicle, api_client, "calls")
+  Rel(hook_dealerships, api_client, "calls")
   Rel(hook_summary, api_client, "calls")
   Rel(hook_vehicles, api_client, "calls")
   Rel(hook_vehicle, api_client, "calls")
@@ -361,6 +369,101 @@ flowchart TD
 | Migration failure | Exit code 1, error log | None — manual rollback via `make migrate-down` |
 | SIGINT/SIGTERM received | Graceful shutdown | In-flight requests complete, pool closed |
 
+### 1.9 Backend Runtime Flow: Create Vehicle
+
+```mermaid
+sequenceDiagram
+  participant FE as Frontend (Browser)
+  participant H as Handler
+  participant S as VehicleService
+  participant DR as DealershipRepository
+  participant VR as VehicleRepository
+  participant DB as PostgreSQL
+
+  FE->>H: POST /api/v1/vehicles (CreateVehicleRequest JSON)
+  H->>S: Create(ctx, input)
+  S->>S: Validate fields (make/model/year/VIN/price/status/stocked_at)
+  alt validation fails
+    S-->>H: error: "field validation message"
+    H-->>FE: 400 Bad Request {code, message}
+  end
+  S->>DR: GetByID(ctx, dealership_id)
+  DR->>DB: SELECT * FROM dealerships WHERE id = $1
+  DB-->>DR: dealership row or nil
+  alt dealership not found
+    S-->>H: error: "Dealership not found"
+    H-->>FE: 400 Bad Request {code, message}
+  end
+  S->>VR: Create(ctx, vehicle)
+  VR->>DB: INSERT INTO vehicles ... RETURNING *
+  alt duplicate VIN
+    DB-->>VR: unique constraint violation
+    VR-->>S: ErrDuplicateVIN sentinel error
+    S-->>H: ErrDuplicateVIN
+    H-->>FE: 409 Conflict {code, message}
+  end
+  DB-->>VR: created vehicle row
+  VR-->>S: *Vehicle
+  S->>S: cache.Invalidate()
+  S-->>H: *Vehicle
+  H-->>FE: 201 Created (Vehicle JSON)
+```
+
+**Key Invariants:**
+- Dealership existence checked before INSERT
+- VIN uniqueness enforced at DB level (UNIQUE constraint)
+- Dashboard cache invalidated on every successful create
+- stocked_at defaults to now if not provided; future dates rejected
+
+**Error Paths:**
+| Condition | Response | Rollback |
+|-----------|----------|----------|
+| Validation failure | 400 Bad Request | No DB call made |
+| Dealership not found | 400 Bad Request | No INSERT attempted |
+| Duplicate VIN | 409 Conflict | INSERT rolled back by DB |
+| DB error | 500 Internal Server Error | No partial state |
+
+### 1.12 Backend Runtime Flow: CSV Export
+
+```mermaid
+sequenceDiagram
+  participant FE as Frontend (Browser)
+  participant H as Handler
+  participant S as VehicleService
+  participant VR as VehicleRepository
+  participant DB as PostgreSQL
+
+  FE->>H: GET /api/v1/vehicles/export?filters...
+  H->>S: ExportCSV(ctx, filters)
+  S->>VR: ListAll(ctx, filters)
+  VR->>DB: SELECT ... FROM vehicles WHERE ... (no LIMIT)
+  DB-->>VR: vehicle rows (up to 10,000)
+  alt > 10,000 rows
+    S-->>H: error: "export exceeds 10,000 row limit"
+    H-->>FE: 400 Bad Request
+  end
+  VR-->>S: []Vehicle
+  S->>S: Encode []Vehicle to CSV bytes (encoding/csv)
+  S-->>H: []byte (CSV content)
+  H->>H: Set Content-Type: text/csv
+  H->>H: Set Content-Disposition: attachment; filename="vehicles-export-YYYY-MM-DD.csv"
+  H-->>FE: 200 OK (binary CSV body)
+  FE->>FE: Browser triggers file download
+```
+
+**Key Invariants:**
+- No pagination — all matching vehicles exported
+- 10,000 row cap enforced in service layer
+- CSV headers always present (even for empty result)
+- Sort column validated against whitelist (same as List)
+
+**Error Paths:**
+| Condition | Response | Rollback |
+|-----------|----------|----------|
+| Invalid filter params | 400 Bad Request | No DB query |
+| > 10,000 matches | 400 Bad Request | DB query result discarded |
+| DB error | 500 Internal Server Error | No partial file |
+
 ---
 
 ## 2. Component Descriptions
@@ -474,10 +577,12 @@ CREATE INDEX idx_vehicle_actions_vehicle ON vehicle_actions(vehicle_id);
 |--------|----------|-------------|
 | GET | `/api/v1/dealerships` | List all dealerships |
 | GET | `/api/v1/vehicles` | List vehicles (filterable, paginated) |
+| POST | `/api/v1/vehicles` | Create a new vehicle |
+| GET | `/api/v1/vehicles/export` | Export filtered vehicles as CSV (max 10,000) |
 | GET | `/api/v1/vehicles/:id` | Get single vehicle with action history |
 | POST | `/api/v1/vehicles/:id/actions` | Log an action for a vehicle |
 | GET | `/api/v1/vehicles/:id/actions` | List actions for a vehicle |
-| GET | `/api/v1/dashboard/summary` | Aggregated inventory stats |
+| GET | `/api/v1/dashboard/summary` | Aggregated inventory stats (incl. actions_this_month) |
 | GET | `/health` | Health check |
 
 ### 4.2 Query Parameters for Vehicle List

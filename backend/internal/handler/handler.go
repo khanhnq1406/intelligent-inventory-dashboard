@@ -2,11 +2,15 @@ package handler
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/khanh/intelligent-inventory-dashboard/backend/internal/models"
+	"github.com/khanh/intelligent-inventory-dashboard/backend/internal/repository"
 	"github.com/khanh/intelligent-inventory-dashboard/backend/internal/service"
 )
 
@@ -229,6 +233,7 @@ func (s *Server) GetDashboardSummary(ctx context.Context, _ GetDashboardSummaryR
 		TotalVehicles:      summary.TotalVehicles,
 		AgingVehicles:      summary.AgingVehicles,
 		AverageDaysInStock: summary.AvgDaysInStock,
+		ActionsThisMonth:   summary.ActionsThisMonth,
 		ByMake:             byMake,
 		ByStatus:           byStatus,
 	}, nil
@@ -308,7 +313,130 @@ func modelActionToResponse(a models.VehicleAction) VehicleAction {
 // isValidationError checks if an error is a validation error (not a system error).
 func isValidationError(err error) bool {
 	msg := err.Error()
-	return strings.Contains(msg, "action_type") ||
+	// Vehicle action validation
+	if strings.Contains(msg, "action_type") ||
 		strings.Contains(msg, "created_by") ||
-		strings.Contains(msg, "notes")
+		strings.Contains(msg, "notes") {
+		return true
+	}
+	// Vehicle creation validation
+	validationPrefixes := []string{
+		"make must", "model must", "year must", "VIN must",
+		"price cannot", "status must", "stocked date cannot",
+		"dealership not found",
+	}
+	for _, prefix := range validationPrefixes {
+		if strings.HasPrefix(msg, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *Server) CreateVehicle(ctx context.Context, request CreateVehicleRequestObject) (CreateVehicleResponseObject, error) {
+	body := request.Body
+
+	// Map OpenAPI request to service input
+	input := models.CreateVehicleInput{
+		Make:   body.Make,
+		Model:  body.Model,
+		Year:   body.Year,
+		VIN:    body.Vin,
+		Status: string(body.Status),
+	}
+
+	// Parse dealership_id UUID
+	dealershipID, err := uuid.Parse(body.DealershipId.String())
+	if err != nil {
+		return CreateVehicle400JSONResponse{Code: 400, Message: "invalid dealership_id"}, nil
+	}
+	input.DealershipID = dealershipID
+
+	// Optional price
+	if body.Price != nil {
+		p := *body.Price
+		input.Price = &p
+	}
+
+	// Optional stocked_at
+	if body.StockedAt != nil {
+		input.StockedAt = *body.StockedAt
+	}
+
+	vehicle, err := s.vehicleSvc.Create(ctx, input)
+	if err != nil {
+		if errors.Is(err, repository.ErrDuplicateVIN) {
+			return CreateVehicle409JSONResponse{Code: 409, Message: "A vehicle with this VIN already exists"}, nil
+		}
+		if isValidationError(err) {
+			return CreateVehicle400JSONResponse{Code: 400, Message: err.Error()}, nil
+		}
+		return CreateVehicle500JSONResponse{Code: 500, Message: "Failed to create vehicle"}, nil
+	}
+
+	resp := modelVehicleToResponse(*vehicle)
+	return CreateVehicle201JSONResponse(resp), nil
+}
+
+func (s *Server) ExportVehicles(ctx context.Context, request ExportVehiclesRequestObject) (ExportVehiclesResponseObject, error) {
+	filters := exportParamsToFilters(request.Params)
+
+	csvBytes, err := s.vehicleSvc.ExportCSV(ctx, filters)
+	if err != nil {
+		if strings.Contains(err.Error(), "export exceeds") {
+			return ExportVehicles400JSONResponse{Code: 400, Message: err.Error()}, nil
+		}
+		return ExportVehicles500JSONResponse{Code: 500, Message: "Failed to generate export"}, nil
+	}
+
+	filename := fmt.Sprintf("vehicles-export-%s.csv", time.Now().UTC().Format("2006-01-02"))
+	return exportCSVResponse{
+		data:     csvBytes,
+		filename: filename,
+	}, nil
+}
+
+// exportCSVResponse is a custom response that sets Content-Disposition header.
+type exportCSVResponse struct {
+	data     []byte
+	filename string
+}
+
+func (r exportCSVResponse) VisitExportVehiclesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", r.filename))
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(r.data)))
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write(r.data)
+	return err
+}
+
+func exportParamsToFilters(p ExportVehiclesParams) models.VehicleFilters {
+	filters := models.VehicleFilters{
+		SortBy: "stocked_at",
+		Order:  "desc",
+	}
+	if p.DealershipId != nil {
+		id := uuid.UUID(*p.DealershipId)
+		filters.DealershipID = &id
+	}
+	if p.Make != nil {
+		filters.Make = *p.Make
+	}
+	if p.Model != nil {
+		filters.Model = *p.Model
+	}
+	if p.Status != nil {
+		filters.Status = string(*p.Status)
+	}
+	if p.Aging != nil {
+		filters.Aging = p.Aging
+	}
+	if p.SortBy != nil {
+		filters.SortBy = string(*p.SortBy)
+	}
+	if p.Order != nil {
+		filters.Order = string(*p.Order)
+	}
+	return filters
 }

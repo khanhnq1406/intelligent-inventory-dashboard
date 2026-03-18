@@ -18,12 +18,34 @@ type mockVehicleRepo struct {
 	getErr   error
 }
 
+// mockDealershipRepoForVehicle used in vehicle service tests
+type mockDealershipRepoForVehicle struct {
+	dealership *models.Dealership
+	getErr     error
+}
+
+func (m *mockDealershipRepoForVehicle) List(_ context.Context) ([]models.Dealership, error) {
+	return nil, nil
+}
+
+func (m *mockDealershipRepoForVehicle) GetByID(_ context.Context, _ uuid.UUID) (*models.Dealership, error) {
+	return m.dealership, m.getErr
+}
+
 func (m *mockVehicleRepo) List(_ context.Context, _ models.VehicleFilters) ([]models.Vehicle, int, error) {
+	return m.vehicles, m.total, m.listErr
+}
+
+func (m *mockVehicleRepo) ListAll(_ context.Context, _ models.VehicleFilters) ([]models.Vehicle, int, error) {
 	return m.vehicles, m.total, m.listErr
 }
 
 func (m *mockVehicleRepo) GetByID(_ context.Context, _ uuid.UUID) (*models.Vehicle, error) {
 	return m.vehicle, m.getErr
+}
+
+func (m *mockVehicleRepo) Create(_ context.Context, _ models.CreateVehicleInput) (*models.Vehicle, error) {
+	return nil, nil
 }
 
 func TestVehicleService_List(t *testing.T) {
@@ -133,7 +155,7 @@ func TestVehicleService_List(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			svc := NewVehicleService(tt.repo)
+			svc := NewVehicleService(tt.repo, &mockDealershipRepoForVehicle{}, &mockCacheInvalidator{})
 			result, err := svc.List(context.Background(), tt.filters)
 			if tt.wantErr {
 				if err == nil {
@@ -196,7 +218,7 @@ func TestVehicleService_GetByID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			svc := NewVehicleService(tt.repo)
+			svc := NewVehicleService(tt.repo, &mockDealershipRepoForVehicle{}, &mockCacheInvalidator{})
 			result, err := svc.GetByID(context.Background(), tt.id)
 			if tt.wantErr {
 				if err == nil {
