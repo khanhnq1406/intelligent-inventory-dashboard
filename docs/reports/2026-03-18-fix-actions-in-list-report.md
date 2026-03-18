@@ -67,7 +67,7 @@ None. `ListAll` (CSV export) intentionally unchanged per plan — adding actions
 
 | Date | Fix | Severity | Commit |
 |------|-----|----------|--------|
-| 2026-03-18 | Dashboard "Recent Actions" empty — increased `page_size` from 10 to 20 in dashboard `useVehicles` call so aging vehicles (which hold seed actions) are included in the fetched page | Minor | pending |
+| 2026-03-18 | Dashboard "Recent Actions" empty — increased `page_size` from 10 to 20 in dashboard `useVehicles` call so aging vehicles (which hold seed actions) are included in the fetched page | Minor | 8f8e7d9 |
 
 ## How to Test
 
