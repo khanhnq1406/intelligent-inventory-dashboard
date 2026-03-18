@@ -39,8 +39,16 @@ func (m *mockVehicleRepoForAction) List(_ context.Context, _ models.VehicleFilte
 	return nil, 0, nil
 }
 
+func (m *mockVehicleRepoForAction) ListAll(_ context.Context, _ models.VehicleFilters) ([]models.Vehicle, int, error) {
+	return nil, 0, nil
+}
+
 func (m *mockVehicleRepoForAction) GetByID(_ context.Context, _ uuid.UUID) (*models.Vehicle, error) {
 	return m.vehicle, m.getErr
+}
+
+func (m *mockVehicleRepoForAction) Create(_ context.Context, _ models.CreateVehicleInput) (*models.Vehicle, error) {
+	return nil, nil
 }
 
 // mockCacheInvalidator implements CacheInvalidator for action service tests
