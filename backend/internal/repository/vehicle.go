@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -104,12 +105,25 @@ func (r *pgxVehicle) List(ctx context.Context, filters models.VehicleFilters) ([
 	offset := (filters.Page - 1) * filters.PageSize
 	argIdx := len(args) + 1
 
-	// Main query
+	// Main query — LEFT JOIN LATERAL fetches last 3 actions per vehicle.
+	// The lateral subquery binds only v.id (DB-internal); no user input flows in.
 	query := fmt.Sprintf(`
 		SELECT v.id, v.dealership_id, v.make, v.model, v.year, v.vin, v.price, v.status,
 		       v.stocked_at, v.created_at, v.updated_at,
-		       EXTRACT(EPOCH FROM NOW() - v.stocked_at)::int / 86400 AS days_in_stock
+		       EXTRACT(EPOCH FROM NOW() - v.stocked_at)::int / 86400 AS days_in_stock,
+		       a.id        AS action_id,
+		       a.action_type,
+		       a.notes,
+		       a.created_by,
+		       a.created_at AS action_created_at
 		FROM vehicles v
+		LEFT JOIN LATERAL (
+		    SELECT id, action_type, notes, created_by, created_at
+		    FROM vehicle_actions
+		    WHERE vehicle_id = v.id
+		    ORDER BY created_at DESC
+		    LIMIT 3
+		) a ON true
 		%s
 		ORDER BY %s %s
 		LIMIT $%d OFFSET $%d`,
@@ -123,22 +137,59 @@ func (r *pgxVehicle) List(ctx context.Context, filters models.VehicleFilters) ([
 	}
 	defer rows.Close()
 
-	var vehicles []models.Vehicle
+	// vehicleMap preserves insertion order while grouping action rows by vehicle ID.
+	vehicleMap := make(map[uuid.UUID]*models.Vehicle)
+	var vehicleOrder []uuid.UUID
+
 	for rows.Next() {
 		var v models.Vehicle
+		// Nullable action fields — NULL when vehicle has no actions
+		var (
+			actionID        *uuid.UUID
+			actionType      *string
+			actionNotes     *string
+			actionCreatedBy *string
+			actionCreatedAt *time.Time
+		)
 		if err := rows.Scan(
 			&v.ID, &v.DealershipID, &v.Make, &v.Model, &v.Year, &v.VIN, &v.Price, &v.Status,
 			&v.StockedAt, &v.CreatedAt, &v.UpdatedAt, &v.DaysInStock,
+			&actionID, &actionType, &actionNotes, &actionCreatedBy, &actionCreatedAt,
 		); err != nil {
 			return nil, 0, fmt.Errorf("scanning vehicle row: %w", err)
 		}
 		v.IsAging = v.DaysInStock > 90
-		vehicles = append(vehicles, v)
+
+		existing, seen := vehicleMap[v.ID]
+		if !seen {
+			v.Actions = []models.VehicleAction{}
+			vehicleMap[v.ID] = &v
+			vehicleOrder = append(vehicleOrder, v.ID)
+			existing = vehicleMap[v.ID]
+		}
+
+		if actionID != nil {
+			a := models.VehicleAction{
+				ID:         *actionID,
+				VehicleID:  existing.ID,
+				ActionType: *actionType,
+				CreatedBy:  *actionCreatedBy,
+				CreatedAt:  *actionCreatedAt,
+			}
+			if actionNotes != nil {
+				a.Notes = *actionNotes
+			}
+			existing.Actions = append(existing.Actions, a)
+		}
 	}
 	if err := rows.Err(); err != nil {
 		return nil, 0, fmt.Errorf("iterating vehicle rows: %w", err)
 	}
 
+	vehicles := make([]models.Vehicle, 0, len(vehicleOrder))
+	for _, id := range vehicleOrder {
+		vehicles = append(vehicles, *vehicleMap[id])
+	}
 	return vehicles, total, nil
 }
 
