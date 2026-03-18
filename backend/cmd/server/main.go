@@ -74,11 +74,12 @@ func main() {
 	dealershipSvc := service.NewDealershipService(dealershipRepo)
 
 	vehicleRepo := repository.NewVehicleRepository(pool)
-	vehicleSvc := service.NewVehicleService(vehicleRepo)
 
 	dashboardRepo := repository.NewDashboardRepository(pool)
 	dashboardCache := service.NewDashboardCache(cacheTTL)
 	dashboardSvc := service.NewDashboardService(dashboardRepo, dashboardCache)
+
+	vehicleSvc := service.NewVehicleService(vehicleRepo, dealershipRepo, dashboardCache)
 
 	actionRepo := repository.NewVehicleActionRepository(pool)
 	actionSvc := service.NewVehicleActionService(actionRepo, vehicleRepo, dashboardCache)

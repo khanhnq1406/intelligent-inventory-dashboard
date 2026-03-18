@@ -46,6 +46,14 @@ func (m *mockVehicleService) GetByID(_ context.Context, _ uuid.UUID) (*models.Ve
 	return m.vehicle, m.getErr
 }
 
+func (m *mockVehicleService) Create(_ context.Context, _ models.CreateVehicleInput) (*models.Vehicle, error) {
+	return nil, nil
+}
+
+func (m *mockVehicleService) ExportCSV(_ context.Context, _ models.VehicleFilters) ([]byte, error) {
+	return nil, nil
+}
+
 type mockActionService struct {
 	action    *models.VehicleAction
 	actions   []models.VehicleAction
