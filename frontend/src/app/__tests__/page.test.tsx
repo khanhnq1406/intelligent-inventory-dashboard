@@ -50,7 +50,7 @@ describe("DashboardPage", () => {
     });
 
     render(<DashboardPage />);
-    expect(screen.getByText("Recent Actions")).toBeInTheDocument();
+    expect(screen.getAllByText("Recent Actions").length).toBeGreaterThan(0);
   });
 
   it("shows loading skeletons when summaryLoading is true", () => {
@@ -91,6 +91,6 @@ describe("DashboardPage", () => {
     });
 
     render(<DashboardPage />);
-    expect(screen.getByText("No recent actions")).toBeInTheDocument();
+    expect(screen.getAllByText("No recent actions").length).toBeGreaterThan(0);
   });
 });

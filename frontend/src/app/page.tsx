@@ -26,14 +26,14 @@ const VehicleStatusChart = dynamic(
 );
 
 function ChartSkeleton() {
-  return <div className="h-64 animate-pulse rounded-xl border border-zinc-200 bg-zinc-50" />;
+  return <div className="h-64 animate-pulse rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800" />;
 }
 
 function StatsSkeleton() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {[...Array(4)].map((_, i) => (
-        <div key={i} className="h-24 animate-pulse rounded-xl border border-zinc-200 bg-zinc-50" />
+        <div key={i} className="h-24 animate-pulse rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800" />
       ))}
     </div>
   );
@@ -59,8 +59,8 @@ export default function DashboardPage() {
 
   if (summaryError) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
-        <p className="text-red-600">Failed to load dashboard data.</p>
+      <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center dark:border-red-900 dark:bg-red-950">
+        <p className="text-red-600 dark:text-red-400">Failed to load dashboard data.</p>
         <button
           onClick={() => window.location.reload()}
           className="mt-2 text-sm text-blue-600 underline"
@@ -74,15 +74,15 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Dashboard</h1>
-        <p className="text-sm text-zinc-500">Real-time vehicle stock overview</p>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Dashboard</h1>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">Real-time vehicle stock overview</p>
       </div>
 
-      {/* Stats Row */}
+      {/* Stats Row — 2x2 on mobile, 4-across on lg */}
       {summaryLoading ? (
         <StatsSkeleton />
       ) : summary ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatsCard title="Total Vehicles" value={summary.total_vehicles} />
           <StatsCard
             title="Aging Stock"
@@ -109,35 +109,35 @@ export default function DashboardPage() {
         {summary?.by_status ? (
           <VehicleStatusChart data={summary.by_status} />
         ) : (
-          <div className="h-64 w-full animate-pulse rounded-xl border border-zinc-200 bg-zinc-50 lg:w-[380px]" />
+          <div className="h-64 w-full animate-pulse rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 lg:w-[380px]" />
         )}
       </div>
 
-      {/* Recent Actions Table */}
-      <div className="rounded-xl border border-zinc-200 bg-white">
+      {/* Recent Actions — desktop table */}
+      <div className="hidden md:block rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
         <div className="flex items-center justify-between px-6 py-4">
-          <h3 className="text-base font-semibold text-zinc-900">Recent Actions</h3>
+          <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">Recent Actions</h3>
           <Link href="/aging" className="text-sm text-blue-600 hover:underline">
             View all &rarr;
           </Link>
         </div>
         <Table>
           <TableHeader>
-            <TableRow className="bg-zinc-50">
-              <TableHead className="text-xs uppercase text-zinc-500">Vehicle</TableHead>
-              <TableHead className="text-xs uppercase text-zinc-500">Action</TableHead>
-              <TableHead className="text-xs uppercase text-zinc-500">Days in Stock</TableHead>
-              <TableHead className="text-xs uppercase text-zinc-500">Date</TableHead>
+            <TableRow className="bg-zinc-50 dark:bg-zinc-800">
+              <TableHead className="text-xs uppercase text-zinc-500 dark:text-zinc-400">Vehicle</TableHead>
+              <TableHead className="text-xs uppercase text-zinc-500 dark:text-zinc-400">Action</TableHead>
+              <TableHead className="text-xs uppercase text-zinc-500 dark:text-zinc-400">Days in Stock</TableHead>
+              <TableHead className="text-xs uppercase text-zinc-500 dark:text-zinc-400">Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {recentActions && recentActions.length > 0 ? (
               recentActions.map((action, i) => (
                 <TableRow key={i}>
-                  <TableCell className="text-sm text-zinc-900">{action.vehicle}</TableCell>
+                  <TableCell className="text-sm text-zinc-900 dark:text-zinc-50">{action.vehicle}</TableCell>
                   <TableCell><ActionBadge actionType={action.actionType} /></TableCell>
-                  <TableCell className="text-sm text-zinc-600">{action.daysInStock}</TableCell>
-                  <TableCell className="text-sm text-zinc-500">
+                  <TableCell className="text-sm text-zinc-600 dark:text-zinc-400">{action.daysInStock}</TableCell>
+                  <TableCell className="text-sm text-zinc-500 dark:text-zinc-400">
                     {new Date(action.date).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
@@ -151,6 +151,35 @@ export default function DashboardPage() {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Recent Actions — mobile card list */}
+      <div className="md:hidden space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">Recent Actions</h3>
+          <Link href="/aging" className="text-sm text-blue-600 hover:underline">
+            View all →
+          </Link>
+        </div>
+        {recentActions && recentActions.length > 0 ? (
+          recentActions.map((action, i) => (
+            <div
+              key={i}
+              className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{action.vehicle}</p>
+                <ActionBadge actionType={action.actionType} />
+              </div>
+              <div className="mt-2 flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400">
+                <span>{action.daysInStock} days in stock</span>
+                <span>{new Date(action.date).toLocaleDateString()}</span>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center py-6 text-zinc-400">No recent actions</p>
+        )}
       </div>
     </div>
   );

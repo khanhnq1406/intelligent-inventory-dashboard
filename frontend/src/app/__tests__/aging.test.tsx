@@ -41,13 +41,13 @@ describe("AgingStockPage", () => {
   it("renders aging table with AgingProgressBar", () => {
     mockUseVehicles.mockReturnValue({ data: { items: mockAgingVehicles, total: 1, page: 1, page_size: 100, total_pages: 1 }, isLoading: false, error: null });
     render(<AgingStockPage />);
-    expect(screen.getByText("106 days")).toBeInTheDocument();
+    expect(screen.getAllByText("106 days").length).toBeGreaterThan(0);
   });
 
   it("shows empty state 'No aging vehicles — great job!'", () => {
     mockUseVehicles.mockReturnValue({ data: { items: [], total: 0, page: 1, page_size: 100, total_pages: 0 }, isLoading: false, error: null });
     render(<AgingStockPage />);
-    expect(screen.getByText("No aging vehicles — great job!")).toBeInTheDocument();
+    expect(screen.getAllByText("No aging vehicles — great job!").length).toBeGreaterThan(0);
   });
 
   it("shows error state when error is truthy", () => {
@@ -70,7 +70,7 @@ describe("AgingStockPage", () => {
     mockUseVehicles.mockReturnValue({ data: { items: mockAgingVehicles, total: 1, page: 1, page_size: 100, total_pages: 1 }, isLoading: false, error: null });
     render(<AgingStockPage />);
 
-    screen.getByRole("button", { name: "Log Action" }).click();
+    screen.getAllByRole("button", { name: "Log Action" })[0].click();
     expect(mockPush).toHaveBeenCalledWith("/vehicles/vehicle-001");
   });
 });
