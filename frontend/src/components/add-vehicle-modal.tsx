@@ -16,7 +16,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { useCreateVehicle } from "@/hooks/use-create-vehicle";
 import { useDealerships } from "@/hooks/use-dealerships";
@@ -31,6 +30,12 @@ interface AddVehicleModalProps {
 
 const CURRENT_YEAR = new Date().getFullYear();
 const TODAY = new Date().toISOString().split("T")[0];
+
+const STATUS_CONFIG = {
+  available: { dot: "bg-green-500", label: "Available" },
+  sold: { dot: "bg-gray-400", label: "Sold" },
+  reserved: { dot: "bg-amber-400", label: "Reserved" },
+} as const;
 
 export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
   const { data: dealerships } = useDealerships();
@@ -125,27 +130,36 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Add New Vehicle</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {/* Dealership */}
           <div>
             <Label htmlFor="dealership_id">Dealership *</Label>
-            <Select
-              value={form.dealership_id}
-              onValueChange={(v) => handleChange("dealership_id", v ?? "")}
-            >
-              <SelectTrigger id="dealership_id">
-                <SelectValue placeholder="Select dealership" />
-              </SelectTrigger>
-              <SelectContent>
-                {dealerships?.map((d) => (
-                  <SelectItem key={d.id} value={d.id}>
-                    {d.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {!dealerships ? (
+              <div className="h-8 w-full animate-pulse rounded-lg bg-muted" />
+            ) : (
+              <Select
+                value={form.dealership_id}
+                onValueChange={(v) => handleChange("dealership_id", v ?? "")}
+              >
+                <SelectTrigger id="dealership_id" className="w-full">
+                  <span className={form.dealership_id ? "" : "text-muted-foreground"}>
+                    {form.dealership_id
+                      ? (dealerships.find((d) => d.id === form.dealership_id)?.name ?? "Select dealership")
+                      : "Select dealership"}
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  {dealerships.map((d) => (
+                    <SelectItem key={d.id} value={d.id}>
+                      {d.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
             {fieldErrors.dealership_id && (
-              <p className="mt-1 text-sm text-red-500">
+              <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
+                <span aria-hidden="true">⚠</span>
                 {fieldErrors.dealership_id}
               </p>
             )}
@@ -162,7 +176,10 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                 maxLength={100}
               />
               {fieldErrors.make && (
-                <p className="mt-1 text-sm text-red-500">{fieldErrors.make}</p>
+                <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
+                  <span aria-hidden="true">⚠</span>
+                  {fieldErrors.make}
+                </p>
               )}
             </div>
             <div>
@@ -174,7 +191,10 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                 maxLength={100}
               />
               {fieldErrors.model && (
-                <p className="mt-1 text-sm text-red-500">{fieldErrors.model}</p>
+                <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
+                  <span aria-hidden="true">⚠</span>
+                  {fieldErrors.model}
+                </p>
               )}
             </div>
           </div>
@@ -192,21 +212,30 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                 onChange={(e) => handleChange("year", e.target.value)}
               />
               {fieldErrors.year && (
-                <p className="mt-1 text-sm text-red-500">{fieldErrors.year}</p>
+                <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
+                  <span aria-hidden="true">⚠</span>
+                  {fieldErrors.year}
+                </p>
               )}
             </div>
             <div>
               <Label htmlFor="price">Price</Label>
-              <Input
-                id="price"
-                type="number"
-                min={0}
-                max={10000000}
-                step="0.01"
-                placeholder="Optional"
-                value={form.price}
-                onChange={(e) => handleChange("price", e.target.value)}
-              />
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground select-none">
+                  $
+                </span>
+                <Input
+                  id="price"
+                  type="number"
+                  min={0}
+                  max={10000000}
+                  step="0.01"
+                  placeholder="Optional"
+                  className="pl-6"
+                  value={form.price}
+                  onChange={(e) => handleChange("price", e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
@@ -222,9 +251,15 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
               placeholder="17-character VIN"
             />
             {fieldErrors.vin && (
-              <p className="mt-1 text-sm text-red-500">{fieldErrors.vin}</p>
+              <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
+                <span aria-hidden="true">⚠</span>
+                {fieldErrors.vin}
+              </p>
             )}
           </div>
+
+          {/* Section divider */}
+          <hr className="border-border" />
 
           {/* Status + Stocked At */}
           <div className="grid grid-cols-2 gap-4">
@@ -234,13 +269,38 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                 value={form.status}
                 onValueChange={(v) => handleChange("status", v ?? "")}
               >
-                <SelectTrigger id="status">
-                  <SelectValue />
+                <SelectTrigger id="status" className="w-full">
+                  {form.status ? (
+                    <span className="flex items-center gap-2">
+                      <span
+                        className={`h-2 w-2 rounded-full ${STATUS_CONFIG[form.status].dot}`}
+                        aria-hidden="true"
+                      />
+                      {STATUS_CONFIG[form.status].label}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">Select status</span>
+                  )}
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="sold">Sold</SelectItem>
-                  <SelectItem value="reserved">Reserved</SelectItem>
+                  <SelectItem value="available">
+                    <span className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-green-500" aria-hidden="true" />
+                      Available
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="sold">
+                    <span className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-gray-400" aria-hidden="true" />
+                      Sold
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="reserved">
+                    <span className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-amber-400" aria-hidden="true" />
+                      Reserved
+                    </span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
