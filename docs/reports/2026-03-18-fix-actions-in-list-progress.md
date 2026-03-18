@@ -6,7 +6,7 @@
 - **Spec file:** docs/specs/2026-03-18-fix-actions-in-list-spec.md
 - **Started:** 2026-03-18T00:00:00Z
 - **Last updated:** 2026-03-18T00:00:00Z
-- **Current state:** in_progress
+- **Current state:** completed
 - **Current task:** 3 (manual smoke test)
 
 ## Task Progress
