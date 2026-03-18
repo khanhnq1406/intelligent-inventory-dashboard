@@ -5,25 +5,25 @@
 - **Plan file:** `docs/plans/2026-03-18-error-handling-polish-plan.md`
 - **Spec file:** `docs/specs/2026-03-17-error-handling-polish-spec.md`
 - **Started:** 2026-03-18T00:00:00Z
-- **Last updated:** 2026-03-18T00:00:00Z
-- **Current state:** in_progress
-- **Current task:** 0
+- **Last updated:** 2026-03-18T04:00:00Z
+- **Current state:** completed
+- **Current task:** done
 
 ## Task Progress
 
 | # | Task Name | Status | Commit | Summary |
 |---|-----------|--------|--------|---------|
-| 0 | Shared Skeleton Primitives | pending | — | — |
-| 1 | Shared Error Fallback Component | pending | — | — |
-| 2 | Improved API Client | pending | — | — |
-| 3 | useMakes Hook | pending | — | — |
-| 4 | Dynamic Makes in VehicleFilters | pending | — | — |
-| 5 | Global Error Boundary + 404 Page | pending | — | — |
-| 6 | Per-Route Error Boundaries | pending | — | — |
-| 7 | Loading Skeleton Pages | pending | — | — |
-| 8 | Accessibility — Sidebar & Mobile Nav | pending | — | — |
-| 9 | Accessibility — Filters, Tables, Pagination | pending | — | — |
-| 10 | Accessibility — Stats Cards and Modal | pending | — | — |
+| 0 | Shared Skeleton Primitives | done | de52f29 | Skeleton, StatsCardSkeleton, TableSkeleton, ChartSkeleton, VehicleInfoSkeleton — 6 tests pass |
+| 1 | Shared Error Fallback Component | done | 0627d30 | ErrorFallback component, never exposes error.message, logs to console.error — 6 tests pass |
+| 2 | Improved API Client | done | f456abd | ApiError class, 30s timeout, retry on 5xx GET only, network error wrapping — 8 tests pass |
+| 3 | useMakes Hook | done | 41bcdb4 | Derives sorted unique makes from dashboard summary — 4 tests pass |
+| 4 | Dynamic Makes in VehicleFilters | done | 2308974 | Replaced hardcoded makes with useMakes hook, 12 tests pass |
+| 5 | Global Error Boundary + 404 Page | done | 92711e4 | app/error.tsx + app/not-found.tsx, lint clean |
+| 6 | Per-Route Error Boundaries | done | a81d90e | inventory/aging/vehicles[id] error.tsx, lint clean |
+| 7 | Loading Skeleton Pages | done | aa3d4fc | 4 loading.tsx files for all routes, lint clean |
+| 8 | Accessibility — Sidebar & Mobile Nav | done | 0892947 | role=navigation, aria-label, aria-current — 9 tests pass |
+| 9 | Accessibility — Filters, Tables, Pagination | done | 24d105e | nav+aria-label on pagination, aria-label on tables, 11 tests pass |
+| 10 | Accessibility — Stats Cards and Modal | done | fd593df | role=status+aria-label on StatsCard, dialog accessibility verified — 174 total tests pass |
 
 **Status values:** `pending` | `in_progress` | `done` | `skipped`
 
