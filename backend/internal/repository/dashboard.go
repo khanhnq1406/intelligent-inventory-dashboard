@@ -77,6 +77,15 @@ func (r *pgxDashboard) GetSummary(ctx context.Context) (*models.DashboardSummary
 		return nil, fmt.Errorf("iterating status rows: %w", err)
 	}
 
+	// Query 4: Actions in last 30 days
+	err = r.pool.QueryRow(ctx, `
+		SELECT COUNT(*) FROM vehicle_actions
+		WHERE created_at >= NOW() - INTERVAL '30 days'
+	`).Scan(&summary.ActionsThisMonth)
+	if err != nil {
+		return nil, fmt.Errorf("counting actions this month: %w", err)
+	}
+
 	// Ensure non-nil slices
 	if summary.ByMake == nil {
 		summary.ByMake = []models.MakeSummary{}
