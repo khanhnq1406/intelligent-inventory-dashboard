@@ -25,6 +25,7 @@ type VehicleService interface {
 type VehicleActionService interface {
 	Create(ctx context.Context, vehicleID uuid.UUID, input models.CreateActionInput) (*models.VehicleAction, error)
 	ListByVehicleID(ctx context.Context, vehicleID uuid.UUID) ([]models.VehicleAction, error)
+	ListRecent(ctx context.Context, filter models.RecentActionsFilter) ([]models.RecentAction, error)
 }
 
 type DashboardService interface {

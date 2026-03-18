@@ -7,7 +7,7 @@
 - **Started:** 2026-03-18T00:00:00Z
 - **Last updated:** 2026-03-18T00:00:00Z
 - **Current state:** in_progress
-- **Current task:** 3
+- **Current task:** 4
 
 ## Task Progress
 
@@ -16,7 +16,7 @@
 | 0 | Add created_at index migration | done | e31963b | Created up/down migration for idx_vehicle_actions_created_at |
 | 1 | OpenAPI spec — RecentAction schema + endpoint | done | 17a08ec | Added RecentAction schema, endpoint, regenerated types, added handler stub |
 | 2 | Model — add RecentAction + RecentActionsFilter | done | 428fb58 | Added RecentAction and RecentActionsFilter structs |
-| 3 | Repository — add ListRecent | pending | — | — |
+| 3 | Repository — add ListRecent | done | 20aafec | Added ListRecent to interface and impl with JOIN vehicles query |
 | 4 | Service — add ListRecent with validation | pending | — | — |
 | 5 | Handler — implement ListRecentActions | pending | — | — |
 | 6 | Frontend hook — useRecentActions | pending | — | — |

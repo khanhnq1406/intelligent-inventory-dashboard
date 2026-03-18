@@ -85,6 +85,17 @@ func (s *vehicleActionService) Create(ctx context.Context, vehicleID uuid.UUID, 
 	return created, nil
 }
 
+func (s *vehicleActionService) ListRecent(ctx context.Context, filter models.RecentActionsFilter) ([]models.RecentAction, error) {
+	if filter.Limit < 1 || filter.Limit > 50 {
+		return nil, fmt.Errorf("limit must be between 1 and 50")
+	}
+	actions, err := s.actionRepo.ListRecent(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("listing recent actions: %w", err)
+	}
+	return actions, nil
+}
+
 func (s *vehicleActionService) ListByVehicleID(ctx context.Context, vehicleID uuid.UUID) ([]models.VehicleAction, error) {
 	// Check vehicle exists
 	vehicle, err := s.vehicleRepo.GetByID(ctx, vehicleID)

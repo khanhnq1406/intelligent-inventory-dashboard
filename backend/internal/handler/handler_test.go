@@ -55,10 +55,12 @@ func (m *mockVehicleService) ExportCSV(_ context.Context, _ models.VehicleFilter
 }
 
 type mockActionService struct {
-	action    *models.VehicleAction
-	actions   []models.VehicleAction
-	createErr error
-	listErr   error
+	action        *models.VehicleAction
+	actions       []models.VehicleAction
+	recentActions []models.RecentAction
+	createErr     error
+	listErr       error
+	listRecentErr error
 }
 
 func (m *mockActionService) Create(_ context.Context, _ uuid.UUID, _ models.CreateActionInput) (*models.VehicleAction, error) {
@@ -67,6 +69,10 @@ func (m *mockActionService) Create(_ context.Context, _ uuid.UUID, _ models.Crea
 
 func (m *mockActionService) ListByVehicleID(_ context.Context, _ uuid.UUID) ([]models.VehicleAction, error) {
 	return m.actions, m.listErr
+}
+
+func (m *mockActionService) ListRecent(_ context.Context, _ models.RecentActionsFilter) ([]models.RecentAction, error) {
+	return m.recentActions, m.listRecentErr
 }
 
 type mockDashboardService struct {
