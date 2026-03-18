@@ -14,7 +14,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
   const pages = getPageNumbers(page, totalPages);
 
   return (
-    <div className="flex items-center justify-between">
+    <nav aria-label="Pagination" className="flex items-center justify-between">
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
         Page {page} of {totalPages}
       </p>
@@ -24,6 +24,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
           size="icon-sm"
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
+          aria-label="Previous page"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -37,6 +38,8 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
               size="icon-sm"
               onClick={() => onPageChange(p as number)}
               className={cn(p === page && "bg-blue-600 text-white hover:bg-blue-700")}
+              aria-label={p === page ? `Page ${p}, current` : `Page ${p}`}
+              aria-current={p === page ? "page" : undefined}
             >
               {p}
             </Button>
@@ -47,11 +50,12 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
           size="icon-sm"
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
+          aria-label="Next page"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-    </div>
+    </nav>
   );
 }
 

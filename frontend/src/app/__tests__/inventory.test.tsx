@@ -18,6 +18,10 @@ vi.mock("@/hooks/use-dealerships", () => ({
   useDealerships: () => ({ data: [] }),
 }));
 
+vi.mock("@/hooks/use-makes", () => ({
+  useMakes: () => ({ makes: [], isLoading: false }),
+}));
+
 describe("InventoryPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();

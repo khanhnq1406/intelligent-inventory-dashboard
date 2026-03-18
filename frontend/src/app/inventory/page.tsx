@@ -158,7 +158,7 @@ export default function InventoryPage() {
 
       {/* Desktop table — hidden on mobile via CSS once isMobile resolves */}
       <div className={`${isMobile ? "hidden" : "block"} rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900`}>
-        <Table>
+        <Table aria-label="Vehicle inventory">
           <TableHeader>
             <TableRow className="bg-zinc-50 dark:bg-zinc-800">
               <TableHead className="w-40 text-xs uppercase text-zinc-500 dark:text-zinc-400">VIN</TableHead>

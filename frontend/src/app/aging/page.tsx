@@ -104,7 +104,7 @@ export default function AgingStockPage() {
 
       {/* Desktop table */}
       <div className="hidden md:block rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
-        <Table>
+        <Table aria-label="Aging stock vehicles">
           <TableHeader>
             <TableRow className="bg-zinc-50 dark:bg-zinc-800">
               <TableHead className="text-xs uppercase text-zinc-500 dark:text-zinc-400">

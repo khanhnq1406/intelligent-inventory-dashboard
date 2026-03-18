@@ -11,10 +11,10 @@ describe("Pagination", () => {
 
   it("renders page number buttons for small page counts", () => {
     render(<Pagination page={1} totalPages={4} onPageChange={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "1" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "2" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "3" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "4" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /page 1, current/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^page 2$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^page 3$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^page 4$/i })).toBeInTheDocument();
   });
 
   it("disables previous button when on page 1", () => {
@@ -37,7 +37,7 @@ describe("Pagination", () => {
     const user = userEvent.setup();
     render(<Pagination page={1} totalPages={5} onPageChange={onPageChange} />);
 
-    await user.click(screen.getByRole("button", { name: "3" }));
+    await user.click(screen.getByRole("button", { name: /^page 3$/i }));
     expect(onPageChange).toHaveBeenCalledWith(3);
   });
 
@@ -65,5 +65,25 @@ describe("Pagination", () => {
     render(<Pagination page={5} totalPages={10} onPageChange={vi.fn()} />);
     const ellipses = screen.getAllByText("...");
     expect(ellipses.length).toBeGreaterThan(0);
+  });
+});
+
+describe("Pagination accessibility", () => {
+  it("wraps pagination in nav with aria-label", () => {
+    render(<Pagination page={2} totalPages={5} onPageChange={vi.fn()} />);
+    const nav = screen.getByRole("navigation", { name: "Pagination" });
+    expect(nav).toBeInTheDocument();
+  });
+
+  it("has previous and next buttons with descriptive aria-labels", () => {
+    render(<Pagination page={2} totalPages={5} onPageChange={vi.fn()} />);
+    expect(screen.getByRole("button", { name: /previous page/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /next page/i })).toBeInTheDocument();
+  });
+
+  it("marks current page button with aria-current", () => {
+    render(<Pagination page={2} totalPages={5} onPageChange={vi.fn()} />);
+    const currentBtn = screen.getByRole("button", { name: /page 2, current/i });
+    expect(currentBtn).toHaveAttribute("aria-current", "page");
   });
 });
