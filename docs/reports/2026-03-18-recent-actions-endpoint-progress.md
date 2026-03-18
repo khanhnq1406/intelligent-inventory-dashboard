@@ -6,8 +6,8 @@
 - **Spec file:** docs/specs/2026-03-18-recent-actions-endpoint-spec.md
 - **Started:** 2026-03-18T00:00:00Z
 - **Last updated:** 2026-03-18T00:00:00Z
-- **Current state:** in_progress
-- **Current task:** 7
+- **Current state:** completed
+- **Current task:** done
 
 ## Task Progress
 
@@ -20,7 +20,7 @@
 | 4 | Service — add ListRecent with validation | done | 32c1459 | Added ListRecent with limit [1,50] validation, 7 table-driven tests pass |
 | 5 | Handler — implement ListRecentActions | done | 86596ed | Implemented ListRecentActions with 5 handler tests, all passing |
 | 6 | Frontend hook — useRecentActions | done | 6a2174d | Created use-recent-actions.ts following use-vehicles.ts pattern |
-| 7 | Dashboard — replace workaround with useRecentActions | pending | — | — |
+| 7 | Dashboard — replace workaround with useRecentActions | done | d2af4b6 | Replaced vehicle-flatmap workaround with useRecentActions({ limit: 3 }) |
 
 **Status values:** `pending` | `in_progress` | `done` | `skipped`
 
