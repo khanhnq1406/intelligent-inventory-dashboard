@@ -100,34 +100,44 @@ func (r *pgxVehicle) List(ctx context.Context, filters models.VehicleFilters) ([
 
 	sortCol := validateSortColumn(filters.SortBy)
 	sortOrder := validateSortOrder(filters.Order)
+	// Outer ORDER BY must reference pv.* since the CTE uses alias pv, not v.
+	pvSortCol := strings.Replace(sortCol, "v.", "pv.", 1)
 
 	// Pagination
 	offset := (filters.Page - 1) * filters.PageSize
 	argIdx := len(args) + 1
 
-	// Main query — LEFT JOIN LATERAL fetches last 3 actions per vehicle.
-	// The lateral subquery binds only v.id (DB-internal); no user input flows in.
+	// Main query — paginate vehicles first in a CTE, then LEFT JOIN LATERAL to
+	// fetch last 3 actions per vehicle. Applying LIMIT/OFFSET before the join
+	// ensures we always return exactly page_size distinct vehicles, not rows.
+	// The lateral subquery binds only pv.id (DB-internal); no user input flows in.
 	query := fmt.Sprintf(`
-		SELECT v.id, v.dealership_id, v.make, v.model, v.year, v.vin, v.price, v.status,
-		       v.stocked_at, v.created_at, v.updated_at,
-		       EXTRACT(EPOCH FROM NOW() - v.stocked_at)::int / 86400 AS days_in_stock,
+		WITH paged_vehicles AS (
+		    SELECT v.id, v.dealership_id, v.make, v.model, v.year, v.vin, v.price, v.status,
+		           v.stocked_at, v.created_at, v.updated_at,
+		           EXTRACT(EPOCH FROM NOW() - v.stocked_at)::int / 86400 AS days_in_stock
+		    FROM vehicles v
+		    %s
+		    ORDER BY %s %s
+		    LIMIT $%d OFFSET $%d
+		)
+		SELECT pv.id, pv.dealership_id, pv.make, pv.model, pv.year, pv.vin, pv.price, pv.status,
+		       pv.stocked_at, pv.created_at, pv.updated_at, pv.days_in_stock,
 		       a.id        AS action_id,
 		       a.action_type,
 		       a.notes,
 		       a.created_by,
 		       a.created_at AS action_created_at
-		FROM vehicles v
+		FROM paged_vehicles pv
 		LEFT JOIN LATERAL (
 		    SELECT id, action_type, notes, created_by, created_at
 		    FROM vehicle_actions
-		    WHERE vehicle_id = v.id
+		    WHERE vehicle_id = pv.id
 		    ORDER BY created_at DESC
 		    LIMIT 3
 		) a ON true
-		%s
-		ORDER BY %s %s
-		LIMIT $%d OFFSET $%d`,
-		whereClause, sortCol, sortOrder, argIdx, argIdx+1)
+		ORDER BY %s %s`,
+		whereClause, sortCol, sortOrder, argIdx, argIdx+1, pvSortCol, sortOrder)
 
 	args = append(args, filters.PageSize, offset)
 
