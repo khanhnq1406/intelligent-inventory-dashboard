@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import * as navigation from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
 
@@ -45,5 +45,33 @@ describe("Sidebar", () => {
     render(<Sidebar />);
     const inventoryLink = screen.getByTitle("Inventory");
     expect(inventoryLink).toHaveClass("bg-zinc-800");
+  });
+});
+
+describe("Sidebar accessibility", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("has role=navigation with aria-label", () => {
+    render(<Sidebar />);
+    const nav = screen.getByRole("navigation", { name: "Main navigation" });
+    expect(nav).toBeInTheDocument();
+  });
+
+  it("marks the active link with aria-current=page", () => {
+    render(<Sidebar />);
+    const dashboardLink = screen.getByRole("link", { name: /dashboard/i });
+    expect(dashboardLink).toHaveAttribute("aria-current", "page");
+  });
+
+  it("non-active links do not have aria-current", () => {
+    render(<Sidebar />);
+    const inventoryLink = screen.getByRole("link", { name: /inventory/i });
+    expect(inventoryLink).not.toHaveAttribute("aria-current", "page");
   });
 });

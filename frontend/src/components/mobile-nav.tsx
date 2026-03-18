@@ -77,7 +77,7 @@ export function MobileNav() {
           </div>
 
           {/* Nav items */}
-          <nav className="flex flex-col gap-1 px-2 flex-1">
+          <nav role="navigation" aria-label="Main navigation" className="flex flex-col gap-1 px-2 flex-1">
             {navItems.map((item) => {
               const isActive =
                 item.href === "/"
@@ -87,6 +87,7 @@ export function MobileNav() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={isActive ? "page" : undefined}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                     isActive
@@ -94,7 +95,7 @@ export function MobileNav() {
                       : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
                   )}
                 >
-                  <item.icon className="h-5 w-5 shrink-0" />
+                  <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
                   {item.label}
                 </Link>
               );

@@ -27,13 +27,15 @@ export function Sidebar() {
       </Link>
 
       {/* Nav icons */}
-      <nav className="flex flex-col gap-2 flex-1">
+      <nav role="navigation" aria-label="Main navigation" className="flex flex-col gap-2 flex-1">
         {navItems.map((item) => {
           const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
+              aria-label={item.label}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
                 isActive
@@ -42,7 +44,7 @@ export function Sidebar() {
               )}
               title={item.label}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-5 w-5" aria-hidden="true" />
             </Link>
           );
         })}
