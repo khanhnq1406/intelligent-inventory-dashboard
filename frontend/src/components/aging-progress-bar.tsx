@@ -7,7 +7,7 @@ export function AgingProgressBar({ days }: { days: number }) {
 
   return (
     <div className="flex items-center gap-2">
-      <div className="h-2 w-20 overflow-hidden rounded-full bg-zinc-100">
+      <div className="h-2 w-20 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
         <div className={cn("h-full rounded-full", color)} style={{ width: `${percentage}%` }} />
       </div>
       <span className={cn("text-xs font-medium", days > 120 ? "text-red-600" : "text-orange-500")}>

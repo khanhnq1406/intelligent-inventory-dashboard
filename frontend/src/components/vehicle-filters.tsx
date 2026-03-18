@@ -47,7 +47,7 @@ export function VehicleFilters({ filters, onFiltersChange, totalCount }: Vehicle
           placeholder="Search by VIN, make, model..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          className="h-9 w-60 rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="h-9 w-60 rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50 dark:placeholder:text-zinc-500"
         />
       </div>
 
@@ -55,7 +55,7 @@ export function VehicleFilters({ filters, onFiltersChange, totalCount }: Vehicle
       <select
         value={filters.make}
         onChange={(e) => updateFilter("make", e.target.value)}
-        className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50"
       >
         {makes.map((m) => (
           <option key={m} value={m === "All Makes" ? "" : m}>{m}</option>
@@ -66,7 +66,7 @@ export function VehicleFilters({ filters, onFiltersChange, totalCount }: Vehicle
       <select
         value={filters.status}
         onChange={(e) => updateFilter("status", e.target.value)}
-        className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50"
       >
         {statuses.map((s) => (
           <option key={s} value={s === "All Statuses" ? "" : s}>

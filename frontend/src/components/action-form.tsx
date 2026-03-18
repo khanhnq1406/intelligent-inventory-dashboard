@@ -44,17 +44,17 @@ export function ActionForm({ vehicleId }: { vehicleId: string }) {
   };
 
   return (
-    <div className="w-full rounded-xl border border-zinc-200 bg-white p-6 lg:w-[380px]">
-      <h3 className="mb-4 text-lg font-semibold text-zinc-900">Log New Action</h3>
+    <div className="w-full rounded-xl border border-zinc-200 bg-white p-6 lg:w-[380px] dark:border-zinc-700 dark:bg-zinc-900">
+      <h3 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">Log New Action</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Action Type */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-500">Action Type</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">Action Type</label>
           <select
             value={actionType}
             onChange={(e) => setActionType(e.target.value as ActionType)}
             required
-            className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:focus:border-blue-500"
           >
             <option value="">Select action type...</option>
             {actionTypes.map((t) => (
@@ -65,26 +65,26 @@ export function ActionForm({ vehicleId }: { vehicleId: string }) {
 
         {/* Notes */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-500">Notes</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">Notes</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add any notes about this action..."
             rows={4}
-            className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500 dark:focus:border-blue-500"
           />
         </div>
 
         {/* Your Name */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-500">Your Name</label>
+          <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">Your Name</label>
           <input
             type="text"
             value={createdBy}
             onChange={(e) => setCreatedBy(e.target.value)}
             required
             placeholder="Enter your name"
-            className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500 dark:focus:border-blue-500"
           />
         </div>
 
@@ -109,7 +109,7 @@ export function ActionForm({ vehicleId }: { vehicleId: string }) {
       {/* Available action types */}
       <div className="mt-4 flex flex-wrap gap-1.5">
         {actionTypes.map((t) => (
-          <span key={t.value} className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500">
+          <span key={t.value} className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
             {t.label}
           </span>
         ))}

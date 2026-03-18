@@ -6,11 +6,11 @@ const actionConfig: Record<string, { label: string; className: string }> = {
   transfer: { label: "Transfer", className: "bg-green-50 text-green-600" },
   auction: { label: "Auction", className: "bg-orange-50 text-orange-600" },
   wholesale: { label: "Wholesale", className: "bg-purple-50 text-purple-600" },
-  custom: { label: "Custom", className: "bg-zinc-100 text-zinc-600" },
+  custom: { label: "Custom", className: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400" },
 };
 
 export function ActionBadge({ actionType }: { actionType: string }) {
-  const config = actionConfig[actionType] ?? { label: actionType, className: "bg-zinc-100 text-zinc-600" };
+  const config = actionConfig[actionType] ?? { label: actionType, className: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400" };
   return (
     <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium", config.className)}>
       {config.label}
