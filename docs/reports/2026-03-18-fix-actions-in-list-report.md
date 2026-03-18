@@ -63,6 +63,12 @@ None. `ListAll` (CSV export) intentionally unchanged per plan — adding actions
 - `backend/internal/handler/handler_test.go` — `TestListVehicles_IncludesActions` added
 - `docs/reports/2026-03-18-fix-actions-in-list-progress.md` — Progress tracking
 
+## Fix History
+
+| Date | Fix | Severity | Commit |
+|------|-----|----------|--------|
+| 2026-03-18 | Dashboard "Recent Actions" empty — increased `page_size` from 10 to 20 in dashboard `useVehicles` call so aging vehicles (which hold seed actions) are included in the fetched page | Minor | pending |
+
 ## How to Test
 
 ```bash

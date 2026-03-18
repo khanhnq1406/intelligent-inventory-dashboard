@@ -41,7 +41,7 @@ function StatsSkeleton() {
 
 export default function DashboardPage() {
   const { data: summary, isLoading: summaryLoading, error: summaryError } = useDashboardSummary();
-  const { data: vehiclesData } = useVehicles({ page_size: 10, order: "desc", sort_by: "stocked_at" });
+  const { data: vehiclesData } = useVehicles({ page_size: 20, order: "desc", sort_by: "stocked_at" });
 
   // Derive recent actions from vehicles that have actions
   const recentActions = vehiclesData?.items
