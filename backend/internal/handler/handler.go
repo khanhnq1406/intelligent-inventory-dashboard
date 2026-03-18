@@ -245,6 +245,14 @@ func (s *Server) GetDashboardSummary(ctx context.Context, _ GetDashboardSummaryR
 	}, nil
 }
 
+func (s *Server) ListRecentActions(ctx context.Context, request ListRecentActionsRequestObject) (ListRecentActionsResponseObject, error) {
+	// TODO: implemented in Task 5
+	return ListRecentActions500JSONResponse{
+		Code:    http.StatusInternalServerError,
+		Message: "not implemented",
+	}, nil
+}
+
 // --- Helper functions ---
 
 func paramsToFilters(p ListVehiclesParams) models.VehicleFilters {

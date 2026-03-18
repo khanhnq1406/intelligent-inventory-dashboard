@@ -132,6 +132,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/actions/recent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List recent actions across all vehicles */
+        get: operations["listRecentActions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/dashboard/summary": {
         parameters: {
             query?: never;
@@ -265,6 +282,22 @@ export interface components {
             status: "available" | "sold" | "reserved";
             /** Format: date-time */
             stocked_at?: string;
+        };
+        RecentAction: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            vehicle_id: string;
+            vehicle_make: string;
+            vehicle_model: string;
+            vehicle_year: number;
+            days_in_stock: number;
+            /** @enum {string} */
+            action_type: "price_reduction" | "transfer" | "auction" | "marketing" | "wholesale" | "custom";
+            notes?: string;
+            created_by: string;
+            /** Format: date-time */
+            created_at: string;
         };
         ErrorResponse: {
             /** @description HTTP status code */
@@ -611,6 +644,47 @@ export interface operations {
             };
             /** @description Vehicle not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    listRecentActions: {
+        parameters: {
+            query?: {
+                limit?: number;
+                dealership_id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Recent actions with vehicle context */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecentAction"][];
+                };
+            };
+            /** @description Invalid query parameters */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -104,6 +104,36 @@ func (e HealthResponseStatus) Valid() bool {
 	}
 }
 
+// Defines values for RecentActionActionType.
+const (
+	RecentActionActionTypeAuction        RecentActionActionType = "auction"
+	RecentActionActionTypeCustom         RecentActionActionType = "custom"
+	RecentActionActionTypeMarketing      RecentActionActionType = "marketing"
+	RecentActionActionTypePriceReduction RecentActionActionType = "price_reduction"
+	RecentActionActionTypeTransfer       RecentActionActionType = "transfer"
+	RecentActionActionTypeWholesale      RecentActionActionType = "wholesale"
+)
+
+// Valid indicates whether the value is a known member of the RecentActionActionType enum.
+func (e RecentActionActionType) Valid() bool {
+	switch e {
+	case RecentActionActionTypeAuction:
+		return true
+	case RecentActionActionTypeCustom:
+		return true
+	case RecentActionActionTypeMarketing:
+		return true
+	case RecentActionActionTypePriceReduction:
+		return true
+	case RecentActionActionTypeTransfer:
+		return true
+	case RecentActionActionTypeWholesale:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for VehicleStatus.
 const (
 	VehicleStatusAvailable VehicleStatus = "available"
@@ -127,28 +157,28 @@ func (e VehicleStatus) Valid() bool {
 
 // Defines values for VehicleActionActionType.
 const (
-	VehicleActionActionTypeAuction        VehicleActionActionType = "auction"
-	VehicleActionActionTypeCustom         VehicleActionActionType = "custom"
-	VehicleActionActionTypeMarketing      VehicleActionActionType = "marketing"
-	VehicleActionActionTypePriceReduction VehicleActionActionType = "price_reduction"
-	VehicleActionActionTypeTransfer       VehicleActionActionType = "transfer"
-	VehicleActionActionTypeWholesale      VehicleActionActionType = "wholesale"
+	Auction        VehicleActionActionType = "auction"
+	Custom         VehicleActionActionType = "custom"
+	Marketing      VehicleActionActionType = "marketing"
+	PriceReduction VehicleActionActionType = "price_reduction"
+	Transfer       VehicleActionActionType = "transfer"
+	Wholesale      VehicleActionActionType = "wholesale"
 )
 
 // Valid indicates whether the value is a known member of the VehicleActionActionType enum.
 func (e VehicleActionActionType) Valid() bool {
 	switch e {
-	case VehicleActionActionTypeAuction:
+	case Auction:
 		return true
-	case VehicleActionActionTypeCustom:
+	case Custom:
 		return true
-	case VehicleActionActionTypeMarketing:
+	case Marketing:
 		return true
-	case VehicleActionActionTypePriceReduction:
+	case PriceReduction:
 		return true
-	case VehicleActionActionTypeTransfer:
+	case Transfer:
 		return true
-	case VehicleActionActionTypeWholesale:
+	case Wholesale:
 		return true
 	default:
 		return false
@@ -374,6 +404,23 @@ type PaginatedVehicles struct {
 	TotalPages int `json:"total_pages"`
 }
 
+// RecentAction defines model for RecentAction.
+type RecentAction struct {
+	ActionType   RecentActionActionType `json:"action_type"`
+	CreatedAt    time.Time              `json:"created_at"`
+	CreatedBy    string                 `json:"created_by"`
+	DaysInStock  int                    `json:"days_in_stock"`
+	Id           openapi_types.UUID     `json:"id"`
+	Notes        *string                `json:"notes,omitempty"`
+	VehicleId    openapi_types.UUID     `json:"vehicle_id"`
+	VehicleMake  string                 `json:"vehicle_make"`
+	VehicleModel string                 `json:"vehicle_model"`
+	VehicleYear  int                    `json:"vehicle_year"`
+}
+
+// RecentActionActionType defines model for RecentAction.ActionType.
+type RecentActionActionType string
+
 // StatusSummary defines model for StatusSummary.
 type StatusSummary struct {
 	Count  int    `json:"count"`
@@ -418,6 +465,12 @@ type VehicleAction struct {
 
 // VehicleActionActionType defines model for VehicleAction.ActionType.
 type VehicleActionActionType string
+
+// ListRecentActionsParams defines parameters for ListRecentActions.
+type ListRecentActionsParams struct {
+	Limit        *int                `form:"limit,omitempty" json:"limit,omitempty"`
+	DealershipId *openapi_types.UUID `form:"dealership_id,omitempty" json:"dealership_id,omitempty"`
+}
 
 // ListVehiclesParams defines parameters for ListVehicles.
 type ListVehiclesParams struct {
@@ -486,6 +539,9 @@ type CreateVehicleActionJSONRequestBody = CreateVehicleActionRequest
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// List recent actions across all vehicles
+	// (GET /api/v1/actions/recent)
+	ListRecentActions(w http.ResponseWriter, r *http.Request, params ListRecentActionsParams)
 	// Get dashboard summary
 	// (GET /api/v1/dashboard/summary)
 	GetDashboardSummary(w http.ResponseWriter, r *http.Request)
@@ -518,6 +574,12 @@ type ServerInterface interface {
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// List recent actions across all vehicles
+// (GET /api/v1/actions/recent)
+func (_ Unimplemented) ListRecentActions(w http.ResponseWriter, r *http.Request, params ListRecentActionsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // Get dashboard summary
 // (GET /api/v1/dashboard/summary)
@@ -581,6 +643,41 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// ListRecentActions operation middleware
+func (siw *ServerInterfaceWrapper) ListRecentActions(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListRecentActionsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "dealership_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "dealership_id", r.URL.Query(), &params.DealershipId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "dealership_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListRecentActions(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // GetDashboardSummary operation middleware
 func (siw *ServerInterfaceWrapper) GetDashboardSummary(w http.ResponseWriter, r *http.Request) {
@@ -993,6 +1090,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/actions/recent", wrapper.ListRecentActions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/dashboard/summary", wrapper.GetDashboardSummary)
 	})
 	r.Group(func(r chi.Router) {
@@ -1021,6 +1121,41 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 
 	return r
+}
+
+type ListRecentActionsRequestObject struct {
+	Params ListRecentActionsParams
+}
+
+type ListRecentActionsResponseObject interface {
+	VisitListRecentActionsResponse(w http.ResponseWriter) error
+}
+
+type ListRecentActions200JSONResponse []RecentAction
+
+func (response ListRecentActions200JSONResponse) VisitListRecentActionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListRecentActions400JSONResponse ErrorResponse
+
+func (response ListRecentActions400JSONResponse) VisitListRecentActionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListRecentActions500JSONResponse ErrorResponse
+
+func (response ListRecentActions500JSONResponse) VisitListRecentActionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type GetDashboardSummaryRequestObject struct {
@@ -1339,6 +1474,9 @@ func (response GetHealth503JSONResponse) VisitGetHealthResponse(w http.ResponseW
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// List recent actions across all vehicles
+	// (GET /api/v1/actions/recent)
+	ListRecentActions(ctx context.Context, request ListRecentActionsRequestObject) (ListRecentActionsResponseObject, error)
 	// Get dashboard summary
 	// (GET /api/v1/dashboard/summary)
 	GetDashboardSummary(ctx context.Context, request GetDashboardSummaryRequestObject) (GetDashboardSummaryResponseObject, error)
@@ -1395,6 +1533,32 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// ListRecentActions operation middleware
+func (sh *strictHandler) ListRecentActions(w http.ResponseWriter, r *http.Request, params ListRecentActionsParams) {
+	var request ListRecentActionsRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListRecentActions(ctx, request.(ListRecentActionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListRecentActions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListRecentActionsResponseObject); ok {
+		if err := validResponse.VisitListRecentActionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // GetDashboardSummary operation middleware
