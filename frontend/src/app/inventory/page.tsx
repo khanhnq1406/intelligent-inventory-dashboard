@@ -6,6 +6,7 @@ import { useVehicles } from "@/hooks/use-vehicles";
 import { VehicleFilters } from "@/components/vehicle-filters";
 import { StatusBadge } from "@/components/status-badge";
 import { Pagination } from "@/components/pagination";
+import { AddVehicleModal } from "@/components/add-vehicle-modal";
 import { Button } from "@/components/ui/button";
 import { Download, Plus, ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,9 @@ export default function InventoryPage() {
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<string>("stocked_at");
   const [order, setOrder] = useState<"asc" | "desc">("desc");
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const { data, isLoading, error } = useVehicles({
     make: filters.make || undefined,
@@ -56,6 +60,38 @@ export default function InventoryPage() {
     setPage(1);
   };
 
+  async function handleExport() {
+    setIsExporting(true);
+    setExportError(null);
+    try {
+      const params = new URLSearchParams();
+      if (filters.make) params.set("make", filters.make);
+      if (filters.status) params.set("status", filters.status);
+      if (filters.aging) params.set("aging", "true");
+      if (sortBy) params.set("sort_by", sortBy);
+      if (order) params.set("order", order);
+
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const url = `${apiBase}/api/v1/vehicles/export?${params}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Export failed");
+      }
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objectUrl;
+      a.download = `vehicles-export-${new Date().toISOString().split("T")[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : "Export failed");
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   // Client-side search filtering (VIN/make/model)
   const filteredItems = data?.items?.filter((v) => {
     if (!filters.search) return true;
@@ -75,13 +111,27 @@ export default function InventoryPage() {
           <h1 className="text-2xl font-bold text-zinc-900">Vehicle Inventory</h1>
           <p className="text-sm text-zinc-500">Manage and filter your complete vehicle stock</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" disabled title="Export coming soon">
-            <Download className="h-4 w-4" /> Export
-          </Button>
-          <Button size="sm" disabled title="Add Vehicle coming soon" className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="h-4 w-4" /> Add Vehicle
-          </Button>
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleExport} disabled={isExporting}>
+              {isExporting ? (
+                <span className="flex items-center gap-1.5">
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-400 border-t-transparent" />
+                  Exporting...
+                </span>
+              ) : (
+                <>
+                  <Download className="h-4 w-4" /> Export
+                </>
+              )}
+            </Button>
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={() => setAddModalOpen(true)}>
+              <Plus className="h-4 w-4" /> Add Vehicle
+            </Button>
+          </div>
+          {exportError && (
+            <p className="text-sm text-red-500">{exportError}</p>
+          )}
         </div>
       </div>
 
@@ -196,6 +246,8 @@ export default function InventoryPage() {
           </div>
         )}
       </div>
+
+      <AddVehicleModal open={addModalOpen} onOpenChange={setAddModalOpen} />
     </div>
   );
 }
