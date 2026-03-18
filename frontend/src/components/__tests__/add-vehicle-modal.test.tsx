@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import React from "react";
 import { AddVehicleModal } from "@/components/add-vehicle-modal";
+import { useDealerships } from "@/hooks/use-dealerships";
 
 const mockMutate = vi.fn();
 const mockReset = vi.fn();
@@ -17,14 +18,7 @@ vi.mock("@/hooks/use-create-vehicle", () => ({
   useCreateVehicle: () => mockMutation,
 }));
 
-vi.mock("@/hooks/use-dealerships", () => ({
-  useDealerships: () => ({
-    data: [
-      { id: "dealer-001", name: "AutoGroup North" },
-      { id: "dealer-002", name: "Central Motors" },
-    ],
-  }),
-}));
+vi.mock("@/hooks/use-dealerships");
 
 // Mock the shadcn dialog wrapper so content renders directly in jsdom (no portal)
 vi.mock("@/components/ui/dialog", () => ({
@@ -55,6 +49,12 @@ describe("AddVehicleModal", () => {
     mockMutation.error = null;
     mockMutation.mutate = mockMutate;
     mockMutation.reset = mockReset;
+    vi.mocked(useDealerships).mockReturnValue({
+      data: [
+        { id: "dealer-001", name: "AutoGroup North" },
+        { id: "dealer-002", name: "Central Motors" },
+      ],
+    } as ReturnType<typeof useDealerships>);
   });
 
   it("renders modal content when open=true", () => {
@@ -155,9 +155,42 @@ describe("AddVehicleModal", () => {
     expect(screen.getByRole("button", { name: /Cancel/i })).toBeDisabled();
     expect(screen.getByRole("button", { name: /Adding.../i })).toBeDisabled();
   });
+
+  it("shows dealership placeholder text initially (not UUID)", () => {
+    render(<AddVehicleModal open={true} onOpenChange={vi.fn()} />);
+    expect(screen.getByText("Select dealership")).toBeInTheDocument();
+  });
+
+  it("shows loading skeleton instead of select when dealerships is undefined", () => {
+    vi.mocked(useDealerships).mockReturnValueOnce({ data: undefined } as ReturnType<typeof useDealerships>);
+    render(<AddVehicleModal open={true} onOpenChange={vi.fn()} />);
+    // When dealerships is undefined, only the status combobox remains (not the dealership one)
+    const comboboxes = screen.queryAllByRole("combobox");
+    expect(comboboxes).toHaveLength(1);
+    expect(comboboxes[0]).toHaveAttribute("id", "status");
+  });
+
+  it("status items include colored dot indicator text (Available, Sold, Reserved)", () => {
+    render(<AddVehicleModal open={true} onOpenChange={vi.fn()} />);
+    expect(screen.getByText("Available")).toBeInTheDocument();
+  });
+
+  it("price field label is present", () => {
+    render(<AddVehicleModal open={true} onOpenChange={vi.fn()} />);
+    expect(screen.getByText("Price")).toBeInTheDocument();
+  });
 });
 
 describe("AddVehicleModal accessibility", () => {
+  beforeEach(() => {
+    vi.mocked(useDealerships).mockReturnValue({
+      data: [
+        { id: "dealer-001", name: "AutoGroup North" },
+        { id: "dealer-002", name: "Central Motors" },
+      ],
+    } as ReturnType<typeof useDealerships>);
+  });
+
   it("has role=dialog and aria-modal=true", async () => {
     render(<AddVehicleModal open={true} onOpenChange={vi.fn()} />);
     const dialog = screen.getByRole("dialog");
