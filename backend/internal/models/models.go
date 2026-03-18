@@ -40,6 +40,27 @@ type VehicleAction struct {
 	CreatedAt  time.Time `json:"created_at"`
 }
 
+// RecentAction is returned by GET /api/v1/actions/recent.
+// It enriches a VehicleAction with vehicle context for dashboard display.
+type RecentAction struct {
+	ID           uuid.UUID `json:"id"`
+	VehicleID    uuid.UUID `json:"vehicle_id"`
+	VehicleMake  string    `json:"vehicle_make"`
+	VehicleModel string    `json:"vehicle_model"`
+	VehicleYear  int       `json:"vehicle_year"`
+	DaysInStock  int       `json:"days_in_stock"`
+	ActionType   string    `json:"action_type"`
+	Notes        string    `json:"notes,omitempty"`
+	CreatedBy    string    `json:"created_by"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
+// RecentActionsFilter holds validated params for the ListRecent query.
+type RecentActionsFilter struct {
+	DealershipID *uuid.UUID
+	Limit        int
+}
+
 type CreateActionInput struct {
 	ActionType string `json:"action_type"`
 	Notes      string `json:"notes,omitempty"`
